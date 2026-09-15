@@ -90,21 +90,40 @@ export default function PortfolioHome() {
     <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-8 h-14 flex items-center justify-between">
-                     <span className="text-2xl font-bold tracking-tight text-sky-600">Krittika Takiar</span>
-          <div className="flex items-center gap-8 text-sm text-gray-500">
-            <a href="#about" className="hover:text-gray-900 transition-colors">About</a>
-            <a href="#work" className="hover:text-gray-900 transition-colors">Work</a>
-            <a href="https://substack.com/@krittikatakiar" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">My Learnings</a>
-            <a href="https://github.com/ktlearnsai-ship-it/ai-agents-portfolio" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">GitHub</a>
-          </div>
-        </div>
-      </nav>
+      <nav className="w-full border-b border-gray-100 bg-white sticky top-0 z-50">
+  <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-4 sm:px-8">
+    <Link 
+      href="/" 
+      className="font-bold text-lg text-blue-600 whitespace-nowrap hover:opacity-80 transition-opacity"
+    >
+      Krittika Takiar
+    </Link>
+
+    <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-600 font-medium">
+      <Link href="#about" className="hover:text-black transition-colors">
+        About
+      </Link>
+      <Link href="#work" className="hover:text-black transition-colors">
+        Work
+      </Link>
+      <Link href="#learnings" className="hover:text-black transition-colors">
+        My Learnings
+      </Link>
+      <Link 
+        href="https://github.com" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="hover:text-black transition-colors"
+      >
+        GitHub
+      </Link>
+    </div>
+  </div>
+</nav>
 
            {/* Hero */}
-      <section id="about" className="pt-28 pb-16 px-8 max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
+<section id="about" className="pt-6 sm:pt-20 pb-8 sm:pb-16 px-4 sm:px-8 max-w-6xl mx-auto">
+  <div className="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
 
           {/* Left: photo on colored panel */}
           <div className="md:col-span-4">
