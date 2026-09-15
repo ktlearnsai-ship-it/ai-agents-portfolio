@@ -72,7 +72,8 @@ const TECH = [
 ];
 
 export default function PortfolioHome() {
-  const [copied, setCopied] = useState(false);
+const [copied, setCopied] = useState(false);
+const [showCaseStudyNotice, setShowCaseStudyNotice] = useState(false);
 
   const handleCopy = async () => {
     try {
@@ -84,39 +85,39 @@ export default function PortfolioHome() {
       console.error("Failed to copy link:", err);
     }
   };
- 
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* Nav */}
-      <nav className="w-full border-b border-gray-100 bg-white sticky top-0 z-50">
-  <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-4 sm:px-8">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <div className="max-w-6xl mx-auto px-4 sm:px-8 h-14 flex items-center justify-between">
     <Link 
       href="/" 
-      className="font-bold text-lg text-blue-600 whitespace-nowrap hover:opacity-80 transition-opacity"
+      className="text-xl sm:text-2xl font-bold tracking-tight text-sky-600 whitespace-nowrap hover:opacity-90 transition-opacity"
     >
       Krittika Takiar
     </Link>
 
-    <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-600 font-medium">
-      <Link href="#about" className="hover:text-black transition-colors">
-        About
-      </Link>
-      <Link href="#work" className="hover:text-black transition-colors">
-        Work
-      </Link>
-      <Link href="#learnings" className="hover:text-black transition-colors">
-        My Learnings
-      </Link>
-      <Link 
-        href="https://github.com" 
+    <div className="flex items-center gap-3 sm:gap-8 text-xs sm:text-sm text-gray-500 font-medium">
+      <a href="#about" className="hover:text-gray-900 transition-colors">About</a>
+      <a href="#work" className="hover:text-gray-900 transition-colors">Work</a>
+      <a 
+        href="https://substack.com/@krittikatakiar" 
         target="_blank" 
         rel="noopener noreferrer" 
-        className="hover:text-black transition-colors"
+        className="hover:text-gray-900 transition-colors hidden sm:inline"
+      >
+        Learnings
+      </a>
+      <a 
+        href="https://github.com/ktlearnsai-ship-it/ai-agents-portfolio" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="hover:text-gray-900 transition-colors"
       >
         GitHub
-      </Link>
+      </a>
     </div>
   </div>
 </nav>
@@ -212,69 +213,74 @@ export default function PortfolioHome() {
       </section>
 
            {/* Timeline */}
-      <section className="border-t border-gray-100 bg-white py-20 px-8">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-m font-semibold text-gray-400 uppercase tracking-widest mb-3">
-            Professional Experience
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-16 max-w-5xl leading-tight">
-           Strategy consulting, tech-led transformation, {" "}<span style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #f97316 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              now agentic AI.
-            </span>
-          </h2>
+      <section className="py-12 sm:py-16 px-4 sm:px-8 max-w-6xl mx-auto">
+  <div 
+    className="rounded-3xl p-6 sm:p-10 md:p-12 shadow-sm relative overflow-hidden" 
+    style={{ background: "linear-gradient(135deg, #ecfeff 0%, #f0f9ff 50%, #fff7ed 100%)" }}
+  >
+    <p className="text-xs sm:text-sm font-bold text-sky-600 uppercase tracking-widest mb-3">
+      Professional Experience
+    </p>
+    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-10 sm:mb-14 max-w-5xl leading-tight">
+      Strategy consulting, tech-led transformation, {" "}
+      <span style={{ background: "linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #f97316 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+        now agentic AI.
+      </span>
+    </h2>
 
-          <div className="relative">
-            {/* Progress line */}
-            <div className="hidden md:block absolute top-9 left-0 right-0 h-px bg-gradient-to-r from-gray-200 via-sky-300 to-orange-300" style={{ marginLeft: "36px", marginRight: "36px" }} />
+    <div className="relative">
+      {/* Progress line (Desktop) */}
+      <div 
+        className="hidden md:block absolute top-9 left-0 right-0 h-px bg-gradient-to-r from-gray-200 via-sky-300 to-orange-300" 
+        style={{ marginLeft: "36px", marginRight: "36px" }} 
+      />
 
-            {/* Timeline items */}
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-8 md:gap-4">
-              {TIMELINE.map((item, i) => (
-                <div key={i} className="relative flex flex-col items-center">
-                  {/* Logo */}
-                  <div className="relative z-10 mb-5">
-                    <div className={`w-[88px] h-[88px] rounded-full ${item.logoBg} flex items-center justify-center shadow-md ring-1 ring-gray-100 overflow-hidden`}>
-                      {item.logo ? (
-                        <img
-                          src={item.logo}
-                          alt={item.org}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-white text-2xl font-bold tracking-tight">
-                          {item.logoText}
-                        </span>
-                      )}
-                    </div>
-                    {item.current && (
-                      <span className="absolute -top-1 -right-1 flex items-center justify-center">
-                        <span className="absolute w-4 h-4 rounded-full bg-green-500 animate-ping opacity-60" />
-                        <span className="relative w-3 h-3 rounded-full bg-green-500 ring-2 ring-white" />
-                      </span>
-                    )}
-                  </div>
+      {/* Timeline items */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-8 md:gap-4">
+        {TIMELINE.map((item, i) => (
+          <div key={i} className="relative flex flex-col items-center">
+            <div className="relative z-10 mb-4 sm:mb-5">
+              <div className={`w-[76px] h-[76px] sm:w-[88px] sm:h-[88px] rounded-full ${item.logoBg} flex items-center justify-center shadow-md ring-1 ring-gray-100 overflow-hidden`}>
+                {item.logo ? (
+                  <img
+                    src={item.logo}
+                    alt={item.org}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white text-xl sm:text-2xl font-bold tracking-tight">
+                    {item.logoText}
+                  </span>
+                )}
+              </div>
+              {item.current && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center">
+                  <span className="absolute w-4 h-4 rounded-full bg-green-500 animate-ping opacity-60" />
+                  <span className="relative w-3 h-3 rounded-full bg-green-500 ring-2 ring-white" />
+                </span>
+              )}
+            </div>
 
-                  {/* Content */}
-                  <div className="text-center w-full px-1">
-                    <p className="text-[11px] font-medium text-gray-400 tracking-wide mb-1.5 uppercase">
-                      {item.year}
-                    </p>
-                    <p className="text-[15px] font-bold text-gray-900 leading-tight mb-1">
-                      {item.role}
-                    </p>
-                    <p className="text-xs font-semibold text-sky-600 mb-3">
-                      {item.org}
-                    </p>
-                    <p className="text-xs text-gray-500 leading-relaxed">
-                      {item.short}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center w-full px-1">
+              <p className="text-[11px] font-medium text-gray-400 tracking-wide mb-1 uppercase">
+                {item.year}
+              </p>
+              <p className="text-sm sm:text-[15px] font-bold text-gray-900 leading-tight mb-0.5">
+                {item.role}
+              </p>
+              <p className="text-xs font-semibold text-sky-600 mb-2">
+                {item.org}
+              </p>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                {item.short}
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
             {/* Work */}
       <section id="work" className="py-24 px-8 max-w-6xl mx-auto">
         <p className="text-m font-semibold text-gray-400 uppercase tracking-widest mb-2">What I have been building</p>
@@ -349,14 +355,17 @@ export default function PortfolioHome() {
                       {agent.icon}
                     </div>
                     {isLive && (
-                      <span
-                        className="inline-flex items-center gap-1 text-[10px] font-bold text-white px-2 py-0.5 rounded-full"
-                        style={{ background: "linear-gradient(135deg, #10b981, #059669)" }}
-                      >
-                        <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
-                        LIVE
-                      </span>
-                    )}
+  <span
+    className="inline-flex items-center gap-1.5 text-[10px] font-bold text-white px-2.5 py-1 rounded-full shadow-sm"
+    style={{ background: "linear-gradient(135deg, #10b981, #059669)" }}
+  >
+    <span className="relative flex h-2 w-2">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+    </span>
+    LIVE
+  </span>
+)}
                     {agent.status === "dev" && (
                       <span className="text-[10px] font-semibold text-gray-500">
                         Building
@@ -397,6 +406,7 @@ export default function PortfolioHome() {
             })}
           </div>
         <div className="space-y-8">
+          
                                         {/* Scout */}
           <div id="scout" className="rounded-3xl overflow-hidden p-8 md:p-14 relative scroll-mt-20" style={{ background: "linear-gradient(135deg, #ecfeff 0%, #f0f9ff 50%, #fff7ed 100%)" }}>
             
@@ -518,123 +528,29 @@ export default function PortfolioHome() {
             </div>
 
             {/* Buttons */}
-            <div className="flex flex-wrap items-center gap-3">
-              <Link href="/agents/scout" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm tracking-wider transition-all hover:opacity-90 shadow-md" style={{ background: "linear-gradient(135deg, #0ea5e9, #0284c7)" }}>
-                TRY LIVE <ArrowUpRight className="w-4 h-4" />
-              </Link>
-              <a href="https://github.com/ktlearnsai-ship-it/ai-agents-portfolio" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border-2 border-gray-900 text-gray-900 font-bold text-sm tracking-wider hover:bg-gray-900 hover:text-white transition-colors">
-                VIEW CASE STUDY
-              </a>
-            </div>
-          </div>
-                    {/* Strategist */}
-          <div id="strategist" className="rounded-3xl overflow-hidden p-8 md:p-12 scroll-mt-20" style={{ background: "linear-gradient(135deg, #fff7ed 0%, #fef3c7 50%, #ffedd5 100%)" }}>
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <p className="text-xs font-bold text-gray-500 tracking-widest uppercase">In development</p>
-                  <span className="text-[11px] font-bold text-white px-3 py-1 rounded-full" style={{ background: "linear-gradient(135deg, #f97316, #ea580c)" }}>
-                    BUILDING
-                  </span>
-                </div>
+           <div className="flex flex-wrap items-center gap-3">
+            <Link 
+              href="/agents/scout" 
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm tracking-wider transition-all hover:opacity-90 shadow-md" 
+              style={{ background: "linear-gradient(135deg, #0ea5e9, #0284c7)" }}
+            >
+              TRY LIVE <ArrowUpRight className="w-4 h-4" />
+            </Link>
 
-                <h3 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight mb-4 leading-[1.05]">
-                  Competitor teardowns<br />
-                  <span style={{ background: "linear-gradient(135deg, #f97316, #ea580c)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                    in minutes.
-                  </span>
-                </h3>
-
-                <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-md">
-                  Pulls quarterly earnings, app store reviews, and news. Turns it into a structured brief with financial health, positioning shifts, and strategic implications.
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {["Alpha Vantage", "Claude", "n8n"].map((t) => (
-                    <span key={t} className="text-xs font-medium text-gray-600 bg-white/70 backdrop-blur px-3 py-1.5 rounded-full">{t}</span>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-6 mb-8 max-w-xs">
-                  <div><p className="text-3xl font-bold text-gray-900">5</p><p className="text-[11px] text-gray-500 mt-1">companies</p></div>
-                  <div><p className="text-3xl font-bold text-gray-900">Q2 2026</p><p className="text-[11px] text-gray-500 mt-1">latest data</p></div>
-                </div>
-
-                <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-gray-300 text-gray-500 font-bold text-xs tracking-wider">
-                  CASE STUDY COMING SOON
-                </span>
-              </div>
-
-              <div className="relative">
-                <div className="rounded-2xl overflow-hidden bg-white shadow-2xl ring-1 ring-black/5 aspect-[4/3] flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center mx-auto mb-4">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/>
-                        <path d="M9 9h6M9 13h6M9 17h4"/>
-                      </svg>
-                    </div>
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Live preview coming soon</p>
-                    <p className="text-xs text-gray-400">Data pipelines running, UI in progress.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button 
+              onClick={() => {
+                setShowCaseStudyNotice(true);
+                setTimeout(() => setShowCaseStudyNotice(false), 2000);
+              }}
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border-2 border-gray-900 text-gray-900 font-bold text-sm tracking-wider hover:bg-gray-900 hover:text-white transition-colors cursor-pointer"
+            >
+              {showCaseStudyNotice ? "COMING SOON" : "VIEW CASE STUDY"}
+            </button>
           </div>
 
-          {/* Ops */}
-          <div id="ops" className="rounded-3xl overflow-hidden p-8 md:p-12 scroll-mt-20" style={{ background: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #e0f2fe 100%)" }}>
-            <div className="grid md:grid-cols-2 gap-10 items-center">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <p className="text-xs font-bold text-gray-500 tracking-widest uppercase">Planned</p>
-                  <span className="text-[11px] font-bold text-gray-600 bg-gray-200 px-3 py-1 rounded-full">
-                    COMING SOON
-                  </span>
-                </div>
-
-                <h3 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight mb-4 leading-[1.05]">
-                  Workflows that<br />
-                  <span style={{ background: "linear-gradient(135deg, #7c3aed, #0284c7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                    fix themselves.
-                  </span>
-                </h3>
-
-                <p className="text-base text-gray-600 leading-relaxed mb-8 max-w-md">
-                  An n8n meta-agent that watches other agent workflows, catches failures, retries with adjusted parameters, and posts a Slack summary. On-call for your automation stack.
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {["n8n", "Slack API", "Node.js"].map((t) => (
-                    <span key={t} className="text-xs font-medium text-gray-600 bg-white/70 backdrop-blur px-3 py-1.5 rounded-full">{t}</span>
-                  ))}
-                </div>
-
-                <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-gray-300 text-gray-500 font-bold text-xs tracking-wider">
-                  ON THE ROADMAP
-                </span>
-              </div>
-
-              <div className="relative">
-                <div className="rounded-2xl overflow-hidden bg-white shadow-2xl ring-1 ring-black/5 aspect-[4/3] flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
-                      </svg>
-                    </div>
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Design in progress</p>
-                    <p className="text-xs text-gray-400">Coming after Strategist ships.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      
+        </div> {/* Closes <div id="scout"> */}
+      </div> {/* Closes <div className="space-y-8"> */}
+    </section> {/* Closes <section id="work"> */}
 
       {/* Tech Stack */}
       <section id="stack" className="py-24 px-8 border-t border-gray-100">
@@ -660,5 +576,6 @@ export default function PortfolioHome() {
         </div>
       </footer>
     </div>
+    
   );
 }
