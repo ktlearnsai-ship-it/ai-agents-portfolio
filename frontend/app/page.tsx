@@ -171,7 +171,7 @@ export default function PortfolioPage() {
                 <Scatter 
                   name="Hypotheses" 
                   data={chartData} 
-                  onClick={(e) => router.push(`/hypothesis/${e.id}`)}
+                  onClick={(e: unknown) => { const p = e as { id: string }; router.push(`/hypothesis/${p.id}`); }}
                   style={{ cursor: 'pointer' }}
                 >
                   {chartData.map((entry, index) => (
