@@ -18,6 +18,7 @@ import {
   Target,
   Activity,
 } from "lucide-react";
+export const dynamic = 'force-dynamic';
 
 const HYPOTHESIS = {
   posture: "Expand",
