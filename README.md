@@ -2,7 +2,7 @@
 
 Strategic AI agents built to demonstrate agentic system design and consulting-grade analytical thinking.
 
-## 🤖 Agent 1: Scout — Growth Intelligence Engine
+## 🤖 Agent 1: Scout, a Growth Intelligence Engine
 
 An AI agent that monitors competitive signals across Southeast Asia, reasons like a BCG partner, and produces ranked strategic growth hypotheses autonomously every week.
 
