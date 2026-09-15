@@ -1,5 +1,5 @@
 "use client";
-
+export const dynamic = 'force-dynamic';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -171,7 +171,7 @@ export default function PortfolioPage() {
                 <Scatter 
                   name="Hypotheses" 
                   data={chartData} 
-                  onClick={(e: unknown) => { const p = e as { id: string }; router.push(`/hypothesis/${p.id}`); }}
+                  onClick={(e: unknown) => { const point = e as { id: string }; router.push(`/hypothesis/${point.id}`); }}
                   style={{ cursor: 'pointer' }}
                 >
                   {chartData.map((entry, index) => (
