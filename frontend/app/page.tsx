@@ -185,7 +185,7 @@ const [showCaseStudyNotice, setShowCaseStudyNotice] = useState(false);
               We're at an inflection point. AI isn't just optimizing businesses, it's rebuilding how they operate. 
             </p>
             <p className="text-base text-gray-500 mb-6 leading-relaxed" style={{ maxWidth: "480px" }}>
-              And so, I'm building. Consulting frameworks meet production-grade AI to turn business questions into clear recommendations, helping leaders make bold, well-grounded moves.
+              So, I'm building. Consulting frameworks meet production-grade AI to turn business questions into clear recommendations, helping leaders make bold, well-grounded moves.
             </p>
           </div>
         </div>
