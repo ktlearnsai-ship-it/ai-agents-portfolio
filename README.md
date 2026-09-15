@@ -1,6 +1,6 @@
 # AI Agents Portfolio — Krittika Takiar
 
-Strategic AI agents built to demonstrate agentic system design, consulting-grade analytical thinking, and Southeast Asian market expertise.
+Strategic AI agents built to demonstrate agentic system design and consulting-grade analytical thinking.
 
 ## 🤖 Agent 1: Scout — Growth Intelligence Engine
 
