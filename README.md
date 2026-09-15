@@ -6,7 +6,7 @@ Strategic AI agents built to demonstrate agentic system design and consulting-gr
 
 An AI agent that monitors competitive signals across Southeast Asia, reasons like a BCG partner, and produces ranked strategic growth hypotheses autonomously every week.
 
-**Live Demo:** https://frontend-git-main-personal-projects-bca9.vercel.app/agents/scout
+**Live Demo:** krittika-takiar.vercel.app
 
 **What it does:**
 1. Researcher: Scans competitors and markets weekly. Surfaces signals humans miss.
