@@ -11,14 +11,14 @@ import {
   ExternalLink,
   CheckCircle2,
   Clock,
-  Github,
-  Linkedin,
+  GitBranch,
+  Link2,
   FileText,
   ChevronRight,
-  BarChart3,
+  BarChart,
   Globe,
   Zap,
-  Brain,
+  BrainCircuit,
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -288,7 +288,7 @@ export default function PortfolioHome() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 border border-slate-700/50 rounded-lg hover:text-white hover:border-slate-600 transition-all"
             >
-              <Github className="w-3.5 h-3.5" />
+              <GitBranch className="w-3.5 h-3.5" />
               GitHub
             </a>
             <a
@@ -297,7 +297,7 @@ export default function PortfolioHome() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 border border-slate-700/50 rounded-lg hover:text-white hover:border-slate-600 transition-all"
             >
-              <Linkedin className="w-3.5 h-3.5" />
+              <Link2 className="w-3.5 h-3.5" />
               LinkedIn
             </a>
             <a
@@ -372,7 +372,7 @@ export default function PortfolioHome() {
             transition={{ duration: 0.5 }}
           >
             <div className="flex items-center gap-2 mb-4">
-              <Brain className="w-4 h-4 text-emerald-500/60" />
+              <BrainCircuit className="w-4 h-4 text-emerald-500/60" />
               <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase">
                 The Thesis
               </h2>
@@ -486,7 +486,7 @@ export default function PortfolioHome() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-500/15 border border-emerald-500/25 rounded-lg hover:bg-emerald-500/25 transition-all"
             >
-              <Linkedin className="w-3.5 h-3.5" />
+              <Link2 className="w-3.5 h-3.5" />
               Connect on LinkedIn
             </a>
             <a
@@ -495,7 +495,7 @@ export default function PortfolioHome() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-300 border border-slate-700/50 rounded-lg hover:text-white hover:border-slate-600 transition-all"
             >
-              <Github className="w-3.5 h-3.5" />
+              <GitBranch className="w-3.5 h-3.5" />
               View Source Code
             </a>
           </div>
