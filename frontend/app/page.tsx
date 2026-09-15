@@ -134,27 +134,12 @@ export default function PortfolioHome() {
                     <circle cx="4" cy="4" r="2"/>
                   </svg>
                 </a>
-                <button
-  onClick={handleCopy}
-  title={copied ? "Copied!" : "Copy link"}
-  className={`h-10 px-3 rounded-full bg-white shadow-sm flex items-center justify-center gap-1.5 transition-all ${
-    copied ? "text-emerald-600 font-semibold ring-1 ring-emerald-300" : "text-gray-500 hover:text-sky-600 hover:shadow-md"
-  }`}
->
-  {copied ? (
-    <>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-      <span className="text-xs">Copied!</span>
-    </>
-  ) : (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-    </svg>
-  )}
-</button>
+                <button onClick={() => navigator.clipboard.writeText("https://krittika-takiar.vercel.app")} title="Copy link" className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-500 hover:text-sky-600 hover:shadow-md transition-all">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
