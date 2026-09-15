@@ -1,4 +1,4 @@
-# AI Agents Portfolio — Krittika Takiar
+# AI Agents Portfolio
 
 Strategic AI agents built to demonstrate agentic system design and consulting-grade analytical thinking.
 
