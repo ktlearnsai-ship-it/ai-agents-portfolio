@@ -1,516 +1,487 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import {
+  ArrowRight,
   ArrowUpRight,
-  Activity,
-  Cpu,
-  Database,
-  ShieldCheck,
-  Layers,
-  ExternalLink,
-  CheckCircle2,
-  Clock,
-  GitBranch,
-  Link2,
-  FileText,
-  ChevronRight,
-  BarChart,
-  Globe,
-  Zap,
-  BrainCircuit,
-  Target,
-  TrendingUp,
+  Mail,
+  MapPin,
 } from "lucide-react";
 
-// ─── AGENT DATA ────────────────────────────────────────────
+// ─── DATA ──────────────────────────────────────────────────
 const AGENTS = [
   {
     id: "scout",
-    name: "Scout Growth Engine",
-    tagline: "Autonomous Growth Hypothesis Generation",
-    status: "PRODUCTION",
-    statusColor: "emerald",
+    company: "Built for Grab",
+    title: "An AI agent that writes the Monday growth brief — before anyone gets to the office",
     description:
-      "An AI agent that monitors 31 competitors across 8 Southeast Asian markets, reasons like a BCG partner, and produces ranked strategic growth hypotheses — autonomously, every week.",
-    value:
-      "Replaces 80% of a growth team's weekly analysis cycle. Each hypothesis includes sizing, trade-offs, scenario modeling, and 30/60/90 day governance.",
-    capabilities: [
-      "Real-time competitive signal monitoring across SEA",
-      "BCG/Porter/Ansoff framework application",
-      "Interactive scenario modeling with adjustable levers",
-      "Automated hypothesis ranking with kill criteria",
-      "Multi-market cross-vertical pattern detection",
+      "Scout watches 31 competitors across 8 Southeast Asian markets. Every week, it reads the signals, checks the market data, applies consulting frameworks, and produces 2-3 ranked growth hypotheses with scenario models a manager can actually use.",
+    tags: ["AI Agent", "n8n", "Claude", "Airtable", "Live"],
+    stats: [
+      { value: "31", label: "competitors tracked" },
+      { value: "8", label: "SEA markets" },
+      { value: "3", label: "hypotheses/week" },
     ],
-    stack: ["Claude Sonnet", "n8n", "Airtable", "Next.js", "NewsData.io"],
-    link: "/agents/scout",
+    href: "/agents/scout",
+    liveHref: "/agents/scout",
+    color: "bg-green-50 border-green-100",
+    status: "Live — try it",
     featured: true,
   },
   {
     id: "strategist",
-    name: "Strategy Co-Pilot",
-    tagline: "Competitive Intelligence & Market Teardowns",
-    status: "DEVELOPMENT",
-    statusColor: "amber",
+    company: "In progress",
+    title: "Competitor teardowns that used to take a week, done in minutes",
     description:
-      "Automated teardowns of competitor strategies, market positioning, and financial performance across Southeast Asian digital economies.",
-    value:
-      "Transforms quarterly earnings, app store data, and news signals into structured competitive briefs with actionable implications.",
-    capabilities: [
-      "Quarterly earnings analysis with YoY comparison",
-      "Competitor strategy reverse-engineering",
-      "Market share tracking across 8 countries",
-      "Financial health scoring and trend detection",
+      "Pulls quarterly earnings, app store data, and news coverage for any public company and turns it into a structured competitive brief. Still in development — the data pipelines work, the output formatting needs polish.",
+    tags: ["Earnings API", "Alpha Vantage", "Claude"],
+    stats: [
+      { value: "5", label: "companies monitored" },
+      { value: "Q2 2026", label: "latest data" },
     ],
-    stack: ["Claude Sonnet", "Alpha Vantage", "n8n", "Airtable"],
-    link: "#",
+    href: "#",
+    liveHref: null,
+    color: "bg-gray-50 border-gray-100",
+    status: "In development",
     featured: false,
   },
   {
-    id: "orchestrator",
-    name: "Operations Automator",
-    tagline: "Self-Healing Workflow Orchestration",
-    status: "DEVELOPMENT",
-    statusColor: "amber",
+    id: "ops",
+    company: "Planned",
+    title: "A workflow orchestrator that fixes itself when pipelines break",
     description:
-      "An n8n-native orchestrator that manages asynchronous task routing, error recovery, and pipeline health monitoring across all agent workflows.",
-    value:
-      "Ensures 24/7 agent reliability with automatic retry logic, anomaly detection, and Slack-based alerting for pipeline failures.",
-    capabilities: [
-      "Multi-pipeline health monitoring",
-      "Automatic error recovery and retry",
-      "Data quality validation gates",
-      "Slack alerting for critical failures",
-    ],
-    stack: ["n8n", "Airtable", "Slack API", "Node.js"],
-    link: "#",
+      "The idea: an n8n meta-agent that monitors all other agent workflows, catches failures, retries with adjusted parameters, and sends a Slack summary. Basically on-call for your automation stack.",
+    tags: ["n8n", "Slack", "Self-healing"],
+    stats: [],
+    href: "#",
+    liveHref: null,
+    color: "bg-gray-50 border-gray-100",
+    status: "Planned",
     featured: false,
+  },
+];
+
+const TIMELINE = [
+  {
+    period: "2026",
+    role: "Building AI agents",
+    detail: "Took a bet on agentic AI. Started building systems that do real analytical work — not chatbots, not demos.",
   },
   {
-    id: "sandbox",
-    name: "Custom Agent Sandbox",
-    tagline: "Rapid Agent Prototyping Environment",
-    status: "PLANNED",
-    statusColor: "slate",
-    description:
-      "A modular framework for spinning up new domain-specific agents in hours, not weeks — with pre-built connectors, evaluation harnesses, and deployment templates.",
-    value:
-      "Reserved for incoming custom deployments. Designed to demonstrate rapid agent development for any business domain.",
-    capabilities: [
-      "Plug-and-play data source connectors",
-      "Pre-built evaluation framework",
-      "One-click deployment pipeline",
-      "Domain-agnostic agent templates",
-    ],
-    stack: ["n8n", "Claude", "Vercel", "GitHub Actions"],
-    link: "#",
-    featured: false,
+    period: "2024–26",
+    role: "MBA, Wharton",
+    detail: "Finance and strategy. Spent most of my time figuring out where AI fits into how companies actually make decisions.",
+  },
+  {
+    period: "2024",
+    role: "Summer Associate, BCG",
+    detail: "Marketing, Sales & Pricing practice. Growth strategy for consumer and tech companies across Asia.",
+  },
+  {
+    period: "2021–24",
+    role: "Samagra Governance",
+    detail: "Public sector strategy in India. Worked on programs reaching millions of people — taught me to think about scale differently.",
+  },
+  {
+    period: "2019–21",
+    role: "Education technology",
+    detail: "Early career in ed-tech. Built products for students who had never used a computer before. That changes how you think about UX.",
   },
 ];
 
-const STATS = [
-  { label: "Active Agents", value: "3+", prefix: "01" },
-  { label: "Markets Monitored", value: "8 SEA", prefix: "02" },
-  { label: "Pipeline", value: "n8n + LLM", prefix: "03" },
-];
-
-const TECH_STACK = [
-  "Next.js 16",
-  "TypeScript",
-  "Tailwind CSS",
-  "n8n",
-  "Claude AI",
-  "Airtable",
-  "Vercel",
-  "Python",
-  "NewsData.io",
-  "Alpha Vantage",
-];
-
-// ─── ANIMATION VARIANTS ────────────────────────────────────
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] },
-  }),
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.06 } },
-};
-
-// ─── STATUS BADGE ──────────────────────────────────────────
-function StatusBadge({ status, color }: { status: string; color: string }) {
-  const colors: Record<string, string> = {
-    emerald: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-    amber: "bg-amber-500/15 text-amber-400 border-amber-500/25",
-    slate: "bg-slate-500/15 text-slate-400 border-slate-500/25",
-  };
-  const dotColors: Record<string, string> = {
-    emerald: "bg-emerald-400",
-    amber: "bg-amber-400",
-    slate: "bg-slate-500",
-  };
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold tracking-[0.12em] uppercase rounded-full border ${colors[color]}`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full ${dotColors[color]} ${color === "emerald" ? "animate-pulse" : ""}`} />
-      {status}
-    </span>
-  );
-}
-
-// ─── AGENT CARD ────────────────────────────────────────────
-function AgentCard({ agent, index }: { agent: (typeof AGENTS)[0]; index: number }) {
-  const isLive = agent.status === "PRODUCTION";
-
-  return (
-    <motion.div
-      custom={index}
-      variants={fadeUp}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-40px" }}
-      className={`group relative rounded-2xl border backdrop-blur-md transition-all duration-300 ${
-        agent.featured
-          ? "col-span-1 md:col-span-2 border-emerald-500/20 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-emerald-950/30 hover:border-emerald-500/40"
-          : "border-slate-800/60 bg-slate-900/50 hover:border-slate-700/80"
-      } hover:shadow-2xl hover:shadow-emerald-500/5`}
-    >
-      {agent.featured && (
-        <div className="absolute -top-px left-8 right-8 h-px bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent" />
-      )}
-
-      <div className="p-6 md:p-8">
-        <div className="flex items-start justify-between mb-5">
-          <StatusBadge status={agent.status} color={agent.statusColor} />
-          {isLive && (
-            <span className="text-[10px] text-slate-500 font-mono tracking-wider">
-              ID: {agent.id.toUpperCase()}-001
-            </span>
-          )}
-        </div>
-
-        <h3 className="text-xl md:text-2xl font-bold text-white mb-1 tracking-tight">
-          {agent.name}
-        </h3>
-        <p className="text-sm text-emerald-400/80 font-medium mb-4 tracking-wide">
-          {agent.tagline}
-        </p>
-
-        <div className={`${agent.featured ? "md:grid md:grid-cols-2 md:gap-8" : ""}`}>
-          <div>
-            <p className="text-sm text-slate-400 leading-relaxed mb-2">
-              {agent.description}
-            </p>
-            <p className="text-sm text-slate-500 leading-relaxed mb-6">
-              {agent.value}
-            </p>
-          </div>
-
-          <div>
-            <div className="mb-6">
-              {agent.capabilities.map((cap, i) => (
-                <div key={i} className="flex items-start gap-2 mb-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500/70 mt-0.5 shrink-0" />
-                  <span className="text-xs text-slate-400 leading-snug">{cap}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between mt-2 pt-5 border-t border-slate-800/50">
-          <div className="flex flex-wrap gap-1.5">
-            {agent.stack.map((tech) => (
-              <span
-                key={tech}
-                className="px-2 py-0.5 text-[10px] font-medium text-slate-400 bg-slate-800/60 rounded border border-slate-700/40"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-
-          {isLive ? (
-            <a
-              href={agent.link}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg hover:bg-emerald-500/20 hover:border-emerald-500/30 transition-all group/btn"
-            >
-              Launch Dashboard
-              <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-            </a>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-slate-500 bg-slate-800/40 rounded-lg border border-slate-700/30">
-              <Clock className="w-3 h-3" />
-              Coming Soon
-            </span>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── MAIN PAGE ─────────────────────────────────────────────
+// ─── PAGE ──────────────────────────────────────────────────
 export default function PortfolioHome() {
-  return (
-    <div className="min-h-screen bg-slate-950 text-white antialiased">
-      {/* Background grid */}
-      <div
-        className="fixed inset-0 pointer-events-none opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-          backgroundSize: "64px 64px",
-        }}
-      />
+  const [hoveredAgent, setHoveredAgent] = useState<string | null>(null);
 
-      {/* ── NAV ─────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-950/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-sm font-bold tracking-[0.15em] text-slate-200">
-              AI AGENTS
-            </span>
-            <span className="text-sm font-light tracking-[0.15em] text-slate-500">
-              // PORTFOLIO
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <a
-              href="https://github.com/ktlearnsai-ship-it/ai-agents-portfolio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 border border-slate-700/50 rounded-lg hover:text-white hover:border-slate-600 transition-all"
-            >
-              <GitBranch className="w-3.5 h-3.5" />
-              GitHub
+  return (
+    <div className="min-h-screen bg-white">
+      {/* ── Nav ─────────────────────────────────────────── */}
+      <nav className="border-b border-gray-100 sticky top-0 bg-white/95 backdrop-blur-sm z-50">
+        <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
+          <span className="text-sm font-semibold text-gray-900">Krittika Takiar</span>
+          <div className="flex items-center gap-6">
+            <a href="#work" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+              Work
+            </a>
+            <a href="#about" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+              About
             </a>
             <a
               href="https://www.linkedin.com/in/krittikatakiar/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 border border-slate-700/50 rounded-lg hover:text-white hover:border-slate-600 transition-all"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              <Link2 className="w-3.5 h-3.5" />
               LinkedIn
             </a>
             <a
-              href="#"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 border border-slate-700/50 rounded-lg hover:text-white hover:border-slate-600 transition-all"
+              href="https://github.com/ktlearnsai-ship-it/ai-agents-portfolio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              <FileText className="w-3.5 h-3.5" />
-              Resume
+              GitHub
             </a>
           </div>
         </div>
       </nav>
 
-      {/* ── HERO ────────────────────────────────────────── */}
-      <section className="relative max-w-6xl mx-auto px-6 pt-24 pb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-emerald-400/70 uppercase mb-6">
-            Strategic AI Architecture & Automation
-          </p>
+      {/* ── Hero ────────────────────────────────────────── */}
+      <section className="max-w-4xl mx-auto px-6 pt-16 pb-16">
+        <div className="flex items-start gap-10">
+          {/* Photo */}
+          <div className="shrink-0 hidden md:block">
+            <div className="w-36 h-36 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+              <Image
+                src="/krittika.jpg"
+                alt="Krittika Takiar"
+                width={144}
+                height={144}
+                className="object-cover w-full h-full"
+                priority
+              />
+            </div>
+          </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
-            Autonomous Systems.
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-200 via-emerald-200 to-slate-400">
-              Quantifiable Impact.
-            </span>
-          </h1>
+          {/* Intro */}
+          <div>
+            <p className="text-sm text-gray-400 mb-3">Hi, I'm Krittika</p>
 
-          <p className="max-w-2xl text-lg text-slate-400 leading-relaxed mb-12">
-            I build AI agents that do the work of growth teams, strategy analysts, and
-            operations managers — autonomously, continuously, at a fraction of the cost. Each
-            agent combines{" "}
-            <span className="text-slate-300">Wharton-trained business strategy</span> with{" "}
-            <span className="text-slate-300">BCG consulting frameworks</span> and{" "}
-            <span className="text-slate-300">production-grade agentic AI systems</span>.
-          </p>
-        </motion.div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-snug tracking-tight mb-5 max-w-2xl">
+              I build AI agents that do the analytical work
+              growth teams spend their Mondays on.
+            </h1>
 
-        {/* Stats Banner */}
-        <motion.div
-          className="grid grid-cols-3 gap-4 max-w-2xl"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          {STATS.map((stat) => (
-            <div
-              key={stat.prefix}
-              className="border border-slate-800/60 rounded-xl px-5 py-4 bg-slate-900/30"
-            >
-              <span className="text-[10px] font-mono text-slate-600 tracking-wider">
-                {stat.prefix}
+            <p className="text-base text-gray-500 leading-relaxed max-w-xl mb-3">
+              Wharton MBA. Ex-BCG. I got curious about what happens when you give an
+              LLM real market data, consulting frameworks, and room to investigate — then
+              ask it to form an opinion, not just summarize.
+            </p>
+
+            <p className="text-base text-gray-500 leading-relaxed max-w-xl mb-6">
+              These agents are what came out of that. Each one replaces a specific,
+              expensive workflow with a system that runs every week, improves over time,
+              and costs less than a coffee.
+            </p>
+
+            <div className="flex items-center gap-4 text-sm text-gray-400">
+              <span className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" />
+                Delhi → Singapore
               </span>
-              <p className="text-xl font-bold text-white mt-1">{stat.value}</p>
-              <p className="text-[11px] text-slate-500 mt-0.5">{stat.label}</p>
+              <span>·</span>
+              <a
+                href="mailto:krittikatakiar@gmail.com"
+                className="flex items-center gap-1.5 hover:text-gray-600 transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                Get in touch
+              </a>
             </div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* ── THESIS + STACK ──────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800/40">
-        <div className="grid md:grid-cols-2 gap-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <BrainCircuit className="w-4 h-4 text-emerald-500/60" />
-              <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase">
-                The Thesis
-              </h2>
-            </div>
-            <p className="text-base text-slate-300 leading-relaxed mb-4">
-              The next layer of business leverage isn&apos;t more dashboards or more analysts.
-              It&apos;s autonomous systems that continuously monitor, reason, and recommend — so
-              human decision-makers focus on judgment, not data gathering.
-            </p>
-            <p className="text-sm text-slate-500 leading-relaxed">
-              Every agent in this portfolio is built to replace a specific, expensive analytical
-              workflow with an always-on system that improves with each cycle. They&apos;re not
-              chatbots. They&apos;re autonomous workers with tools, memory, and strategic
-              reasoning.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1, duration: 0.5 }}
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Layers className="w-4 h-4 text-emerald-500/60" />
-              <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase">
-                Technical Stack
-              </h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {TECH_STACK.map((tech) => (
-                <span
-                  key={tech}
-                  className="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/50 border border-slate-700/40 rounded-lg hover:border-emerald-500/30 hover:text-emerald-300 transition-all cursor-default"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-            <div className="mt-6 p-4 bg-slate-900/40 border border-slate-800/40 rounded-xl">
-              <p className="text-xs text-slate-500 leading-relaxed">
-                <span className="text-slate-400 font-medium">Architecture:</span> Each agent
-                runs as an autonomous n8n workflow with scheduled triggers, real-time data
-                pipelines, LLM-powered reasoning, and structured output to Airtable. The
-                frontend reads from Airtable&apos;s API and renders interactive dashboards on
-                Vercel.
-              </p>
-            </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ── AGENT SHOWCASE ──────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800/40">
-        <motion.div
-          className="flex items-center gap-2 mb-10"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-        >
-          <Target className="w-4 h-4 text-emerald-500/60" />
-          <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase">
-            Agent Showcase
-          </h2>
-          <div className="flex-1 h-px bg-slate-800/60 ml-4" />
-        </motion.div>
+      {/* ── Work ────────────────────────────────────────── */}
+      <section id="work" className="max-w-4xl mx-auto px-6 pb-20">
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-8">
+          What I have been building
+        </p>
 
-        <motion.div
-          className="grid md:grid-cols-2 gap-4"
-          variants={stagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-        >
-          {AGENTS.map((agent, i) => (
-            <AgentCard key={agent.id} agent={agent} index={i} />
+        <div className="space-y-6">
+          {AGENTS.map((agent) => (
+            <div
+              key={agent.id}
+              onMouseEnter={() => setHoveredAgent(agent.id)}
+              onMouseLeave={() => setHoveredAgent(null)}
+              className={`rounded-2xl border p-8 transition-all duration-200 ${agent.color} ${
+                agent.liveHref
+                  ? "hover:shadow-md hover:border-green-200 cursor-pointer"
+                  : ""
+              }`}
+            >
+              {/* Company + status */}
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-medium text-gray-500">{agent.company}</span>
+                <span
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                    agent.status.includes("Live")
+                      ? "bg-green-100 text-green-700"
+                      : agent.status.includes("development")
+                        ? "bg-amber-50 text-amber-600"
+                        : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  {agent.status.includes("Live") && (
+                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse" />
+                  )}
+                  {agent.status}
+                </span>
+              </div>
+
+              {/* Title */}
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 leading-snug mb-3 max-w-2xl">
+                {agent.title}
+              </h2>
+
+              {/* Description */}
+              <p className="text-sm text-gray-500 leading-relaxed mb-5 max-w-2xl">
+                {agent.description}
+              </p>
+
+              {/* Screenshot mockup for Scout */}
+              {agent.featured && (
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-5">
+                  <div className="bg-gray-50 border-b border-gray-100 px-4 py-2 flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-gray-200" />
+                    </div>
+                    <span className="text-[10px] text-gray-400 ml-2">
+                      krittika-takiar.vercel.app/agents/scout
+                    </span>
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100">
+                            Expand
+                          </span>
+                          <span className="text-[10px] text-gray-400">Urgency 9/10</span>
+                          <span className="text-[10px] text-gray-400">· High confidence</span>
+                        </div>
+                        <p className="text-sm font-bold text-gray-900 max-w-md">
+                          &ldquo;Ant&apos;s AMP protocol commoditizes GrabPay — Grab should become
+                          the first wallet-agnostic superapp&rdquo;
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          Generated Sep 12, 2026 · Based on 14 signals across 8 markets
+                        </p>
+                      </div>
+                      <div className="text-right bg-gray-50 rounded-lg px-4 py-3">
+                        <p className="text-lg font-bold text-gray-900">$134M</p>
+                        <p className="text-[10px] text-gray-400">quarterly revenue</p>
+                        <p className="text-[10px] text-gray-400">at inflection</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mb-4">
+                      {["Thesis", "Counter-arguments", "Scenario model", "Options", "Next steps", "Signals"].map(
+                        (tab, i) => (
+                          <span
+                            key={tab}
+                            className={`text-[10px] px-2.5 py-1 rounded ${
+                              i === 0
+                                ? "bg-green-600 text-white"
+                                : "bg-gray-100 text-gray-500"
+                            }`}
+                          >
+                            {tab}
+                          </span>
+                        )
+                      )}
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <p className="text-xs text-gray-600 leading-relaxed">
+                        GrabPay is #2-3 in Malaysia, #3-4 in Philippines, #3 in Vietnam.
+                        Defending these costs capital that could fund lending in Indonesia,
+                        where Grab has a bank license and a $2.3B loan portfolio growing 3x
+                        year over year. The move: adopt AMP, let users pay however they want,
+                        keep the merchant relationship and the data...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2 mb-5">
+                {agent.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[11px] text-gray-500 bg-white border border-gray-200 px-2.5 py-1 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Stats + CTA */}
+              <div className="flex items-end justify-between">
+                {agent.stats.length > 0 && (
+                  <div className="flex gap-8">
+                    {agent.stats.map((stat, i) => (
+                      <div key={i}>
+                        <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                        <p className="text-xs text-gray-400">{stat.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {agent.liveHref ? (
+                  <Link
+                    href={agent.liveHref}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-green-700 hover:text-green-800 transition-colors group"
+                  >
+                    Try it live
+                    <ArrowRight
+                      className={`w-4 h-4 transition-transform ${
+                        hoveredAgent === agent.id ? "translate-x-1" : ""
+                      }`}
+                    />
+                  </Link>
+                ) : (
+                  <span className="text-xs text-gray-400">
+                    {agent.status === "Planned" ? "Coming this week" : "In progress"}
+                  </span>
+                )}
+              </div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── ABOUT ───────────────────────────────────────── */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-800/40">
-        <motion.div
-          className="max-w-2xl"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-4 h-4 text-emerald-500/60" />
-            <h2 className="text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase">
-              About
-            </h2>
+      {/* ── About ───────────────────────────────────────── */}
+      <section id="about" className="border-t border-gray-100">
+        <div className="max-w-4xl mx-auto px-6 py-16">
+          <div className="grid md:grid-cols-5 gap-12">
+            {/* Left: story */}
+            <div className="md:col-span-3">
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-6">
+                The short version
+              </p>
+
+              <p className="text-base text-gray-700 leading-relaxed mb-4">
+                I have spent the last seven years working on problems where the answer is
+                never obvious — public sector programs that need to reach 50 million people,
+                growth strategy for tech companies fighting for market share, and education
+                products for students who had never touched a laptop.
+              </p>
+
+              <p className="text-base text-gray-700 leading-relaxed mb-4">
+                BCG taught me frameworks. Wharton taught me finance. But the thing that
+                changed how I work was realizing that most of the &ldquo;analysis&rdquo; smart
+                people spend their weeks on — pulling data, scanning competitors, sizing
+                markets, building scenarios — is work a well-designed agent can do in minutes.
+                Not perfectly. But well enough to free up the human for the part that actually
+                matters: judgment.
+              </p>
+
+              <p className="text-base text-gray-700 leading-relaxed mb-8">
+                So I started building. These agents are not academic projects — they are built
+                to do the exact work I would do on day one of the roles I am targeting.
+              </p>
+
+              {/* Timeline */}
+              <div className="space-y-0">
+                {TIMELINE.map((item, i) => (
+                  <div key={i} className="flex gap-4 py-3 border-t border-gray-100 first:border-t-0">
+                    <span className="text-xs font-medium text-gray-400 w-16 shrink-0 pt-0.5">
+                      {item.period}
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">{item.role}</p>
+                      <p className="text-sm text-gray-500 mt-0.5">{item.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: how it works */}
+            <div className="md:col-span-2">
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-6">
+                How these agents work
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    label: "Orchestration",
+                    detail: "n8n workflows — scheduled triggers, loops, error handling. Runs on Docker locally, deployable to Railway.",
+                  },
+                  {
+                    label: "Reasoning",
+                    detail:
+                      "Claude Sonnet as the AI Agent with 9 tools. Multi-step investigation: read signals, pull market data, war-game competitors, apply frameworks, stress-test the thesis.",
+                  },
+                  {
+                    label: "Formatting",
+                    detail: "Claude Haiku takes the free-form analysis and packs it into structured JSON the frontend can render.",
+                  },
+                  {
+                    label: "Data layer",
+                    detail: "Airtable — signals, market profiles (58 fields × 8 countries), competitor registry (31 entries), hypothesis output.",
+                  },
+                  {
+                    label: "Signals",
+                    detail:
+                      "NewsData.io pulls competitor news. Code-based keyword scoring filters noise. Deduplication catches the same story across multiple competitors.",
+                  },
+                  {
+                    label: "Frontend",
+                    detail: "Next.js on Vercel. Reads from Airtable API. Interactive sliders for scenario modeling.",
+                  },
+                ].map((item, i) => (
+                  <div key={i}>
+                    <p className="text-xs font-semibold text-gray-700 mb-0.5">
+                      {item.label}
+                    </p>
+                    <p className="text-sm text-gray-500 leading-relaxed">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-gray-100">
+                <a
+                  href="https://github.com/ktlearnsai-ship-it/ai-agents-portfolio"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-green-700 hover:text-green-800 transition-colors"
+                >
+                  See the full code and architecture on GitHub
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
           </div>
-          <p className="text-base text-slate-300 leading-relaxed mb-4">
-            <span className="text-white font-semibold">Krittika Takiar</span> — Wharton MBA
-            (Class of 2026), ex-BCG (Marketing, Sales & Pricing practice), with prior
-            experience in public sector strategy and education technology.
-          </p>
-          <p className="text-sm text-slate-500 leading-relaxed mb-6">
-            I build at the intersection of strategic consulting and AI engineering. My agents
-            aren&apos;t academic exercises — they&apos;re built to solve the exact problems I&apos;d face in
-            the roles I&apos;m targeting: growth strategy, competitive intelligence, and operational
-            planning across Southeast Asian markets.
-          </p>
-          <div className="flex gap-3">
+        </div>
+      </section>
+
+      {/* ── Footer ──────────────────────────────────────── */}
+      <footer className="border-t border-gray-100">
+        <div className="max-w-4xl mx-auto px-6 py-8 flex items-center justify-between">
+          <div className="text-xs text-gray-400">
+            <p>Krittika Takiar · Wharton MBA 2026 · Ex-BCG</p>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-gray-400">
             <a
               href="https://www.linkedin.com/in/krittikatakiar/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-emerald-500/15 border border-emerald-500/25 rounded-lg hover:bg-emerald-500/25 transition-all"
+              className="hover:text-gray-600 transition-colors"
             >
-              <Link2 className="w-3.5 h-3.5" />
-              Connect on LinkedIn
+              LinkedIn
             </a>
             <a
               href="https://github.com/ktlearnsai-ship-it/ai-agents-portfolio"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-300 border border-slate-700/50 rounded-lg hover:text-white hover:border-slate-600 transition-all"
+              className="hover:text-gray-600 transition-colors"
             >
-              <GitBranch className="w-3.5 h-3.5" />
-              View Source Code
+              GitHub
+            </a>
+            <a
+              href="mailto:krittikatakiar@gmail.com"
+              className="hover:text-gray-600 transition-colors"
+            >
+              Email
             </a>
           </div>
-        </motion.div>
-      </section>
-
-      {/* ── FOOTER ──────────────────────────────────────── */}
-      <footer className="border-t border-slate-800/40 py-8">
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-          <p className="text-xs text-slate-600">
-            Designed & Engineered for Scalable Agent Deployments.
-          </p>
-          <p className="text-xs text-slate-700">
-            &copy; {new Date().getFullYear()} Krittika Takiar. All rights reserved.
-          </p>
         </div>
       </footer>
     </div>
