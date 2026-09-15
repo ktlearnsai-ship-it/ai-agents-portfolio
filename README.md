@@ -9,16 +9,15 @@ An AI agent that monitors competitive signals across Southeast Asia, reasons lik
 **Live Demo:** https://frontend-git-main-personal-projects-bca9.vercel.app/
 
 **What it does:**
-- Monitors 31 competitors across 8 SEA markets
-- Reads 58-field market profiles per country
-- Uses Claude AI Agent with 9 tools to investigate, war-game, and hypothesize
-- Produces interactive hypothesis cards with scenario sliders and strategic options
+1. Researcher: Scans competitors and markets weekly. Surfaces signals humans miss.
+2. Interpreter: Turns raw news into growth adjacencies and trend classifications (accelerating, maturing, subsiding).
+3. Thought partner: Applies best-in-class strategic frameworks. Actively challenges its own thesis.
+4. Simulator: Models scenarios with adjustable levers. Shows P&L impact under different assumptions.
+5. Communicator: Delivers ranked hypotheses with urgency, confidence, pilot designs, and 30/60/90 next steps.
 
-**Stack:** n8n · Claude Sonnet + Haiku · Airtable · Next.js · Vercel · NewsData.io
-
-**Built for:** Grab Senior Manager, Growth & Planning
+**Stack:** n8n · Claude · Airtable · Next.js · Vercel · VS Code· NewsData.io
 
 ## More agents coming this week...
 
 ---
-Built by [Krittika Takiar](https://www.linkedin.com/in/krittika-takiar/) — Wharton MBA, ex-BCG
+Built by [Krittika Takiar] — Wharton MBA, ex-BCG
