@@ -21,4 +21,4 @@ An AI agent that monitors competitive signals across Southeast Asia, reasons lik
 ## More agents coming this week...
 
 ---
-Built by [Krittika Takiar](https://www.linkedin.com/in/krittikatakiar/) — Wharton MBA, ex-BCG
+Built by [Krittika Takiar](https://www.linkedin.com/in/krittika-takiar/) — Wharton MBA, ex-BCG
