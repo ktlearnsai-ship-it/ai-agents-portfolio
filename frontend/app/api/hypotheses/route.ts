@@ -19,11 +19,14 @@ export async function GET() {
     }
 
     const hypotheses = data.records
-      .filter(r => r.fields.hypothesis_title && r.fields.status === 'Active')
-      .map(r => {
-        const f = r.fields;
+      .filter((r: Record<string, unknown>) => {
+        const fields = r.fields as Record<string, unknown>;
+        return fields.hypothesis_title && fields.status === 'Active';
+      })
+      .map((r: Record<string, unknown>) => {
+        const f = r.fields as Record<string, unknown>;
         return {
-          id: r.id,
+          id: r.id as string,
           rank: f.rank || 0,
           title: f.hypothesis_title || '',
           thesis: f.thesis || '',
@@ -36,21 +39,22 @@ export async function GET() {
           keyMetric: f.key_metric || '',
           keyMetricValue: f.key_metric_value || 0,
           keyMetricUnit: f.key_metric_unit || '',
-          levers: safeJSON(f.levers),
-          scenarioGrid: safeJSON(f.scenario_grid),
-          affectedMarkets: safeJSON(f.affected_markets),
-          options: safeJSON(f.options),
+          levers: safeJSON(f.levers as string),
+          scenarioGrid: safeJSON(f.scenario_grid as string),
+          affectedMarkets: safeJSON(f.affected_markets as string),
+          options: safeJSON(f.options as string),
           weekOf: f.week_of || ''
         };
       });
 
     return Response.json(hypotheses);
-  } catch (error) {
-    return Response.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return Response.json({ error: message }, { status: 500 });
   }
 }
 
-function safeJSON(str) {
+function safeJSON(str: string) {
   if (!str) return [];
   if (typeof str !== 'string') return str;
   try {
