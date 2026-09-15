@@ -54,7 +54,7 @@ const TIMELINE = [
   {
     year: "Now",
     org: "Independent",
-    short: "Building agents that do the strategy work — autonomously.",
+    short: "Building agents that do the strategy work, autonomously.",
     logo: null,
     logoBg: "bg-gradient-to-br from-sky-500 to-orange-400",
     logoText: "AI",
@@ -103,7 +103,7 @@ const [showCaseStudyNotice, setShowCaseStudyNotice] = useState(false);
       <a href="#about" className="hover:text-gray-900 transition-colors">About</a>
       <a href="#work" className="hover:text-gray-900 transition-colors">Work</a>
       <a 
-        href="https://substack.com/@krittikatakiar" 
+        href="https://substack.com/@shipandlearn2026" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="hover:text-gray-900 transition-colors hidden sm:inline"
@@ -178,11 +178,14 @@ const [showCaseStudyNotice, setShowCaseStudyNotice] = useState(false);
             </h1>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-4 font-medium" style={{ maxWidth: "480px" }}>
-              I combine consulting frameworks with production-grade AI to build agents that turn business questions into clear recommendations.
+              Ex-BCG consultant specializing in GTM strategy, AI marketing effectiveness, and operational transformation across India and the US.
             </p>
 
-            <p className="text-base text-gray-500 leading-relaxed" style={{ maxWidth: "480px" }}>
-              Previously at BCG — GTM strategy, AI-driven marketing effectiveness, and large-scale operational transformation for clients across India and the US. Now shipping the working systems, not the slides.
+            <p className="text-base text-gray-500 leading-relaxed mb-4" style={{ maxWidth: "480px" }}>
+              We're at an inflection point. AI isn't just optimizing businesses, it's rebuilding how they operate. 
+            </p>
+            <p className="text-base text-gray-500 mb-6 leading-relaxed" style={{ maxWidth: "480px" }}>
+              And so, I'm building. Consulting frameworks meet production-grade AI to turn business questions into clear recommendations, helping leaders make bold, well-grounded moves.
             </p>
           </div>
         </div>
@@ -201,7 +204,7 @@ const [showCaseStudyNotice, setShowCaseStudyNotice] = useState(false);
             </div>
           </div>
           <a
-            href="https://substack.com/@krittikatakiar"
+            href="https://substack.com/@shipandlearn2026"
             target="_blank"
             rel="noopener noreferrer"
 
@@ -483,7 +486,7 @@ const [showCaseStudyNotice, setShowCaseStudyNotice] = useState(false);
                       <span className="text-xs text-gray-400">Urgency 9/10 · High confidence</span>
                     </div>
                     <p className="text-xl font-bold text-gray-900 leading-snug mb-2">
-                      &ldquo;Ant&apos;s AMP protocol commoditizes GrabPay — Grab should become the first wallet-agnostic superapp.&rdquo;
+                      &ldquo;Ant&apos;s AMP protocol commoditizes GrabPay. Grab should become the first wallet-agnostic superapp.&rdquo;
                     </p>
                     <p className="text-xs text-gray-400">Sep 12, 2026 · 14 signals · 8 markets · 31 competitors</p>
                   </div>
