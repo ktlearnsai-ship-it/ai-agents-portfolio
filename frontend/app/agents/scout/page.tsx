@@ -1,527 +1,779 @@
+// @ts-nocheck
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Search,
-  TrendingUp,
-  Swords,
-  Sliders,
-  FileText,
-  ChevronDown,
-  AlertCircle,
-  CheckCircle2,
-  MinusCircle,
-  ExternalLink,
-  Download,
-  Zap,
-  Target,
-  Activity,
+  Search, TrendingUp, Sliders, ChevronDown, ChevronUp,
+  AlertCircle, CheckCircle2, MinusCircle, Download,
+  Zap, Target, Loader2, Radar,
+  Plus, Star, X, Sparkles, BookmarkPlus, Trash2, Eye,
+  Newspaper, Shield, BarChart3, ClipboardCheck,
+  Trophy, ArrowRight, RefreshCw, Building2, Tag, MapPin,
+  Calendar, Filter, Check, Lightbulb, SortDesc,
 } from "lucide-react";
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-const HYPOTHESIS = {
-  posture: "Expand",
-  urgency: 9,
-  confidence: "HIGH",
-  hypothesis_statement:
-    "If Grab launches a wallet-agnostic checkout in Malaysia and the Philippines within 90 days, GMV will grow by 4-7%, because merchants will accept lower payment margins in exchange for AMP-enabled cross-border volume.",
-  test_window: "90 days",
-  suggested_owner: "Regional Growth Lead (MY/PH)",
-  generated_date: "Sep 12, 2026",
-  signals_processed: 47,
-  markets_analyzed: 8,
-  competitors_tracked: 31,
-
-  signals: [
-    { id: "s142", date: "Sep 11, 2026", title: "Ant International launches Agentic Payment Protocol (AMP)", score: 92, competitor: "Alipay", markets: ["ID", "PH", "VN", "TH"], impact: "Threatens payment moat across SEA", source: "TechCrunch", url: "#" },
-    { id: "s138", date: "Sep 10, 2026", title: "Sea Group Q2 earnings — Shopee GMV +34% YoY", score: 78, competitor: "Sea Group", markets: ["All SEA"], impact: "E-commerce compounding, ads revenue pressure", source: "Sea Group IR", url: "#" },
-    { id: "s135", date: "Sep 9, 2026", title: "Mastercard unveils Wallet Pay for connected global payments", score: 71, competitor: "Mastercard", markets: ["Global"], impact: "Cross-border wallet interop accelerating", source: "The Business Standard", url: "#" },
-    { id: "s131", date: "Sep 8, 2026", title: "Grab Q2 2026 earnings — FinServ revenue $134M, +59% YoY", score: 68, competitor: "Grab", markets: ["All SEA"], impact: "Lending portfolio 3x YoY, $2.3B outstanding", source: "Grab Investor Relations", url: "#" },
-    { id: "s128", date: "Sep 7, 2026", title: "GCash surpasses 94M active users in Philippines", score: 65, competitor: "GCash", markets: ["PH"], impact: "Payment dominance in PH near-total", source: "Rappler", url: "#" },
-  ],
-
-  adjacencies: [
-    { name: "Cross-border remittance", marketSize: 9, rightToWin: 8, competitive: 4, fit: "high" },
-    { name: "SME banking", marketSize: 7, rightToWin: 8, competitive: 5, fit: "high" },
-    { name: "B2B logistics", marketSize: 8, rightToWin: 5, competitive: 7, fit: "medium" },
-    { name: "Lending expansion", marketSize: 8, rightToWin: 7, competitive: 6, fit: "high" },
-    { name: "Grocery vertical", marketSize: 6, rightToWin: 4, competitive: 8, fit: "low" },
-    { name: "Insurance products", marketSize: 5, rightToWin: 5, competitive: 6, fit: "low" },
-  ],
-
-  trends: {
-    accelerating: ["Agentic payments (Ant AMP, Mastercard Wallet Pay)", "Cross-border wallet interoperability", "AI-powered merchant tools"],
-    maturing: ["Food delivery consolidation", "Digital bank licensing in SEA"],
-    subsiding: ["Standalone ride-hail pricing wars", "Feature-phone-first SEA products"],
-  },
-
-  framework_applied: "Porter's 5 Forces",
-  framework_analysis: [
-    { force: "Threat of new entrants", rating: 4, note: "Ant, Meta, Sea entering payments" },
-    { force: "Bargaining power of buyers", rating: 3, note: "Merchant lock-in weakening" },
-    { force: "Bargaining power of suppliers", rating: 2, note: "Grab owns most infrastructure" },
-    { force: "Threat of substitutes", rating: 5, note: "AMP protocol is a direct substitute" },
-    { force: "Competitive rivalry", rating: 4, note: "Sea, GoTo, inDrive all pressing" },
-  ],
-
-  assumptions: [
-    { id: "a1", statement: "Ant AMP will hit >100K merchants in SEA by Q2 2027", confidence: "medium", basis: "Ant AMP launch signals + Alipay+ trajectory data", pressure_test: "Get merchant sign-up data from Ant's public disclosures monthly.", linked_signals: ["s142", "s135"] },
-    { id: "a2", statement: "MY and PH merchants accept 30-50bps lower payment margins in exchange for cross-border volume", confidence: "low", basis: "TNG+ historical margin data (proxy only, not direct)", pressure_test: "Survey 200 merchants across both markets. Owner: Growth Ops.", linked_signals: [] },
-    { id: "a3", statement: "GrabPay share loss will not exceed 15% during pilot", confidence: "medium", basis: "GrabPay-only checkout conversion data + cohort analysis", pressure_test: "Run 4-week A/B in Klang Valley before regional rollout.", linked_signals: ["s131"] },
-    { id: "a4", statement: "Regulatory approval in Indonesia takes less than 9 months", confidence: "low", basis: "Recent OJK precedent (limited sample size)", pressure_test: "Legal team pre-consult with OJK before committing to PH pilot expansion.", linked_signals: [] },
-    { id: "a5", statement: "Merchant lock-in from wallet-agnostic is durable (>12 months) once established", confidence: "medium", basis: "Adyen and Stripe cohort retention data (analogous market)", pressure_test: "Model cohort retention curves with regional growth team.", linked_signals: [] },
-  ],
-
-  kill_criteria: [
-    "Merchant survey shows <60% willing to accept lower payment margins",
-    "GrabPay share loss exceeds 25% in first 4 weeks of pilot",
-    "Ant AMP merchant count stalls below 30K by Q1 2027",
-    "OJK regulatory pre-consult surfaces major structural risk",
-  ],
-
-  levers: [
-    { id: "l1", name: "Merchant margin acceptance rate", linked_assumption: "a2", min: 20, max: 100, default: 65, unit: "%" },
-    { id: "l2", name: "AMP merchant reach by Q2 2027", linked_assumption: "a1", min: 30, max: 500, default: 150, unit: "K" },
-    { id: "l3", name: "GrabPay share loss during pilot", linked_assumption: "a3", min: 0, max: 40, default: 15, unit: "%" },
-  ],
-
-  test_plan: {
-    what_to_test: [
-      "Merchant willingness (survey): 200 merchants across MY + PH",
-      "Conversion impact (A/B test): 5% traffic in Klang Valley",
-      "GrabPay cannibalization: track share by cohort in test group",
-    ],
-    data_scout_provides: [
-      "Competitor signal timeline with source URLs",
-      "Adjacency scoring across 6 growth spaces",
-      "Framework analysis (Porter's 5 Forces)",
-      "Trend classification (accelerating vs subsiding)",
-    ],
-    data_team_gathers: [
-      "Merchant survey responses (200 in 3 weeks)",
-      "GrabPay checkout conversion data by market",
-      "Ant AMP monthly merchant count (public disclosures)",
-      "OJK regulatory precedent research (legal team)",
-    ],
-    success_criteria: [
-      "Conversion lift ≥ 3% in test cohort",
-      "GrabPay share loss ≤ 15%",
-      "Merchant survey: >60% willingness to accept lower margin",
-    ],
-    timeline: [
-      { weeks: "Week 1-3", task: "Merchant survey across MY + PH", owner: "Growth Ops" },
-      { weeks: "Week 2-3", task: "Regulatory pre-consult with OJK", owner: "Legal" },
-      { weeks: "Week 3", task: "Go/No-Go decision on A/B pilot", owner: "Regional Growth Lead" },
-      { weeks: "Week 4-8", task: "A/B pilot in Klang Valley (5% traffic)", owner: "Product + Growth" },
-      { weeks: "Week 9", task: "Read results, decide expansion", owner: "Regional Growth Lead" },
-    ],
-  },
+/* ═══ TOKENS ═══ */
+const C = {
+  scout: "#D85A30", scoutLight: "#FAECE7",
+  grab: "#00b14f", grabDark: "#008a3d", grabDarker: "#005a28", grabLight: "#e6f7ed", grabXLight: "#f0faf4",
+  bg: "#FAFAF7", card: "#FFFFFF", cardAlt: "#F8F7F3", border: "#E8E6E0",
+  text: "#2C2C2A", sub: "#6B6B65", muted: "#9E9E96",
+  redEdge: "#E24B4A", redBg: "#FEF0EE", redText: "#A32D2D",
+  amberEdge: "#EF9F27", amberBg: "#FEF6E6", amberText: "#854F0B",
+  tealEdge: "#1D9E75", tealBg: "#E1F5EE", tealText: "#085041",
 };
 
-const TABS = [
-  { id: "researcher", label: "Researcher", icon: Search, subtitle: "Signals gathered" },
-  { id: "interpreter", label: "Interpreter", icon: TrendingUp, subtitle: "Patterns seen" },
-  { id: "thought", label: "Thought Partner", icon: Swords, subtitle: "Assumptions tested" },
-  { id: "simulator", label: "Simulator", icon: Sliders, subtitle: "Sensitivity model" },
-  { id: "communicator", label: "Communicator", icon: FileText, subtitle: "Test plan" },
+const STAGES = [
+  { id: "researcher", label: "Signals", icon: Search, desc: "Find competitive signals" },
+  { id: "interpreter", label: "Patterns", icon: BarChart3, desc: "Spot growth adjacencies" },
+  { id: "thought", label: "Stress test", icon: Shield, desc: "Validate assumptions" },
+  { id: "simulator", label: "Simulate", icon: Sliders, desc: "Model what-if scenarios" },
+  { id: "communicator", label: "Test plan", icon: ClipboardCheck, desc: "Ship the experiment" },
 ];
 
-function CompanyDropdown() {
-  const [open, setOpen] = useState(false);
+const SECTORS = ["All", "Payments", "Mobility", "FinServ", "Food Delivery", "Logistics", "Regulatory", "AI / Technology"];
+const MARKETS_LIST = ["All", "Malaysia", "Singapore", "Indonesia", "Philippines", "Thailand", "Vietnam", "Cambodia", "Myanmar"];
+const TIME_RANGES = ["All", "Last week", "Last month", "Last 3 months", "Last 6 months"];
+const COMP_MAP = {
+  All: ["Ant Group", "Sea Group", "GoTo / Gojek", "GCash", "Touch n Go", "Dana", "TrueMoney", "Mastercard", "Visa", "Maxim", "inDrive"],
+  Payments: ["Ant Group", "GCash", "Touch n Go", "Dana", "TrueMoney", "Mastercard", "Visa"],
+  Mobility: ["GoTo / Gojek", "Maxim", "inDrive"],
+  FinServ: ["Ant Group", "Sea Group", "GCash", "Dana", "Mastercard", "Visa"],
+  "Food Delivery": ["GoTo / Gojek", "Sea Group", "Foodpanda"],
+  Logistics: ["Sea Group", "GoTo / Gojek", "J&T Express"],
+  Regulatory: [], "AI / Technology": ["Sea Group", "GoTo / Gojek"],
+};
+
+/* ═══ HELPERS ═══ */
+function fmt(d) { if (!d) return ""; try { const dt = new Date(d); return isNaN(dt.getTime()) ? d : dt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); } catch { return d; } }
+function clean(s) { return (s || "").replace(/\u2014/g, "-").replace(/\u2013/g, "-"); }
+
+const COUNTRY_CODES = { Malaysia: "MY", Singapore: "SG", Indonesia: "ID", Philippines: "PH", Thailand: "TH", Vietnam: "VN", Cambodia: "KH", Myanmar: "MM" };
+function toCode(m) { if (!m) return m; if (m.length <= 3) return m; return COUNTRY_CODES[m] || m; }
+function marketCodes(arr) { return (arr || []).map(m => typeof m === "string" ? toCode(m) : toCode(m.market)); }
+
+const COMP_SECTOR = {
+  "Maxim": "Mobility", "inDrive": "Mobility", "GoTo / Gojek": "Mobility", "GoTo": "Mobility", "Gojek": "Mobility",
+  "Ant Group": "Payments", "GCash": "Payments", "Dana": "Payments", "Touch n Go": "Payments", "TrueMoney": "Payments", "Mastercard": "Payments", "Visa": "Payments",
+  "Sea Group": "Deliveries", "Shopee": "Deliveries", "Foodpanda": "Food Delivery", "J&T Express": "Logistics",
+};
+function inferSector(s) {
+  if (s.sector && s.sector !== "General") return s.sector;
+  if (s.competitor && COMP_SECTOR[s.competitor]) return COMP_SECTOR[s.competitor];
+  const text = ((s.title || "") + " " + (s.impact || "") + " " + (s.hypothesis_statement || "")).toLowerCase();
+  if (text.includes("ride") || text.includes("driver") || text.includes("mobility") || text.includes("commission cap")) return "Mobility";
+  if (text.includes("payment") || text.includes("wallet") || text.includes("grabpay") || text.includes("amp") || text.includes("fintech")) return "Payments";
+  if (text.includes("deliver") || text.includes("food")) return "Deliveries";
+  if (text.includes("logistic") || text.includes("shipping")) return "Logistics";
+  return "General";
+}
+
+function shortName(h) {
+  if (h.hypothesis_name && h.hypothesis_name !== "Hypothesis") return clean(h.hypothesis_name);
+  const stmt = clean(h.hypothesis_statement || "");
+  // Extract "If Grab [action] within..." → imperative title
+  const m = stmt.match(/^If Grab\s+(.+?)(?:\s+within\b|\s+in\s+\d|\s+over\s+the\s+next|,)/i);
+  if (m) {
+    let action = m[1].trim();
+    // "builds X" → "Build X", "launches X" → "Launch X"
+    action = action.replace(/^(\w+?)s\b/i, (_, v) => v.charAt(0).toUpperCase() + v.slice(1));
+    // Capitalize first letter if not already
+    action = action.charAt(0).toUpperCase() + action.slice(1);
+    return action;
+  }
+  // Fallback: first sentence up to comma
+  const fallback = stmt.split(/[,.]/).filter(Boolean)[0] || stmt;
+  return fallback.substring(0, 50);
+}
+
+/* ═══ SMALL COMPONENTS ═══ */
+function ConfPill({ level }) {
+  const m = { high: { bg: C.tealBg, c: C.tealText, I: CheckCircle2 }, medium: { bg: C.amberBg, c: C.amberText, I: MinusCircle }, low: { bg: C.redBg, c: C.redText, I: AlertCircle } };
+  const s = m[level] || m.medium;
+  return <span style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em", padding: "3px 9px", borderRadius: 99, background: s.bg, color: s.c }}><s.I style={{ width: 11, height: 11 }} />{level}</span>;
+}
+
+function Toast({ msg, onClose }) { useEffect(() => { const t = setTimeout(onClose, 2500); return () => clearTimeout(t); }, [onClose]); return <div style={{ position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 999, display: "flex", alignItems: "center", gap: 8, background: C.grab, color: "white", padding: "12px 24px", borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", fontSize: 14, fontWeight: 600 }}><CheckCircle2 style={{ width: 16, height: 16 }} />{msg}</div>; }
+
+function CompanyDD() {
+  const [o, setO] = useState(false);
+  return <div style={{ position: "relative" }}>
+    <button onClick={() => setO(!o)} style={{ border: `1px solid ${C.border}`, borderRadius: 99, padding: "6px 16px", display: "flex", alignItems: "center", gap: 8, fontSize: 13, background: C.card, cursor: "pointer" }}><span style={{ color: C.muted }}>Analyzing</span><span style={{ fontWeight: 600, color: C.text }}>Grab</span><ChevronDown style={{ width: 14, height: 14, color: C.muted }} /></button>
+    {o && <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 240, background: C.card, borderRadius: 14, border: `1px solid ${C.border}`, boxShadow: "0 8px 24px rgba(0,0,0,0.08)", zIndex: 50 }}><div style={{ padding: 8 }}><div style={{ padding: "8px 12px", borderRadius: 8, background: C.grabXLight, display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontSize: 13, fontWeight: 600 }}>Grab Holdings</span><CheckCircle2 style={{ width: 14, height: 14, color: C.grab }} /></div>{["GoTo Group", "Sea Group"].map(c => <div key={c} style={{ padding: "8px 12px", display: "flex", justifyContent: "space-between", alignItems: "center", opacity: 0.45 }}><span style={{ fontSize: 13, color: C.sub }}>{c}</span><span style={{ fontSize: 10, fontWeight: 600, color: C.muted, background: C.cardAlt, padding: "2px 8px", borderRadius: 99 }}>SOON</span></div>)}</div></div>}
+  </div>;
+}
+
+/* Hypothesis context banner for stages 2-5 */
+function HypContext({ h }) {
+  const mkts = marketCodes(h.primary_markets || h.affected_markets || []);
+  const sector = inferSector(h);
   return (
-    <div className="relative">
-      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-sm font-semibold text-gray-800 hover:border-gray-400 transition-colors">
-        <span className="text-gray-500 font-normal">Analyzing:</span> Grab
-        <ChevronDown className="w-4 h-4 text-gray-400" />
-      </button>
-      {open && (
-        <div className="absolute top-full mt-2 right-0 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50">
-          <div className="p-2">
-            <div className="px-3 py-2 rounded-lg bg-sky-50 flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-900">Grab Holdings</span>
-              <CheckCircle2 className="w-4 h-4 text-sky-600" />
-            </div>
-            {["GoTo Group", "Sea Group", "Uber Technologies"].map((c) => (
-              <div key={c} className="px-3 py-2 flex items-center justify-between opacity-50">
-                <span className="text-sm text-gray-600">{c}</span>
-                <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">SOON</span>
-              </div>
-            ))}
-          </div>
-          <div className="border-t border-gray-100 px-4 py-3 bg-gray-50">
-            <p className="text-[11px] text-gray-500">Scout&apos;s framework works for any consumer platform. This MVP demos Grab.</p>
-          </div>
-        </div>
-      )}
+    <div style={{ background: C.grabXLight, border: `1px solid ${C.grab}`, borderRadius: 14, padding: "16px 22px", marginBottom: 28, borderLeft: `4px solid ${C.grab}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: C.grabDarker, background: "rgba(255,255,255,0.7)", padding: "3px 10px", borderRadius: 8, display: "flex", alignItems: "center", gap: 3 }}><Tag style={{ width: 10, height: 10 }} />{sector}</span>
+        {mkts.map(m => <span key={m} style={{ fontSize: 11, fontWeight: 600, color: C.sub, background: "rgba(255,255,255,0.7)", padding: "2px 8px", borderRadius: 6 }}>{m}</span>)}
+        <span style={{ fontSize: 10, fontWeight: 700, background: "rgba(255,255,255,0.7)", padding: "3px 9px", borderRadius: 99 }}>Urgency {h.urgency}/10</span>
+        <ConfPill level={(h.confidence || "medium").toLowerCase()} />
+      </div>
+      <p style={{ fontSize: 14, color: C.text, lineHeight: 1.6 }}>{clean(h.hypothesis_statement)}</p>
     </div>
   );
 }
 
-function ConfidencePill({ level }: { level: string }) {
-  const styles: Record<string, { bg: string; text: string; ring: string; icon: typeof CheckCircle2 }> = {
-    high: { bg: "bg-emerald-50", text: "text-emerald-700", ring: "ring-emerald-200", icon: CheckCircle2 },
-    medium: { bg: "bg-amber-50", text: "text-amber-700", ring: "ring-amber-200", icon: MinusCircle },
-    low: { bg: "bg-red-50", text: "text-red-700", ring: "ring-red-200", icon: AlertCircle },
-  };
-  const s = styles[level] || styles.medium;
-  const Icon = s.icon;
+/* Next stage button */
+function NextStage({ current, setTab }) {
+  const idx = STAGES.findIndex(s => s.id === current);
+  if (idx >= STAGES.length - 1) return null;
+  const next = STAGES[idx + 1];
   return (
-    <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${s.bg} ${s.text} ring-1 ${s.ring}`}>
-      <Icon className="w-3 h-3" />
-      {level}
-    </span>
+    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 28 }}>
+      <button onClick={() => setTab(next.id)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 22px", borderRadius: 12, border: "none", background: C.grab, color: "white", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+        Next: {next.label}<ArrowRight style={{ width: 16, height: 16 }} />
+      </button>
+    </div>
   );
 }
 
+/* ═══ MAIN ═══ */
 export default function ScoutPage() {
-  const [activeTab, setActiveTab] = useState("thought");
-  const [leverValues, setLeverValues] = useState<Record<string, number>>(Object.fromEntries(HYPOTHESIS.levers.map((l) => [l.id, l.default])));
+  const [activeTab, setActiveTab] = useState("researcher");
+  const [hypothesis, setHypothesis] = useState(null);
+  const [leverValues, setLeverValues] = useState({});
+  const [researchMode, setResearchMode] = useState(null);
+  const [showModes, setShowModes] = useState(false);
 
-  const h = HYPOTHESIS;
+  const [newsOpenSignal, setNewsOpenSignal] = useState(null);
+  const [investigatingSignal, setInvestigatingSignal] = useState(null);
+  const [investigationResults, setInvestigationResults] = useState({});
 
-  const computeRecommendation = () => {
-    const marginAcceptance = leverValues.l1;
-    const grabPayLoss = leverValues.l3;
-    const ampReach = leverValues.l2;
-    if (marginAcceptance < 45 || grabPayLoss > 30) {
-      return { label: "HYPOTHESIS AT RISK", color: "red", message: "If margin acceptance drops below 45% or GrabPay loss exceeds 30%, cross-border volume gains do not offset cannibalization. Recommend delaying test and running Assumption 2 survey before committing pilot resources." };
-    }
-    if (marginAcceptance < 60 || ampReach < 75) {
-      return { label: "TEST SMALLER FIRST", color: "amber", message: "Marginal case. Recommend a limited pilot in one market (MY only) before regional rollout. Focus on gathering Assumption 1 and 2 data before scaling." };
-    }
-    return { label: "GREEN LIGHT", color: "emerald", message: "Assumption stack holds. Launch phased pilot in MY and PH simultaneously. Target 5% traffic allocation in Klang Valley. Expected conversion lift 4-7% based on scenario grid." };
+  const [searchMarket, setSearchMarket] = useState("All");
+  const [searchSector, setSearchSector] = useState("All");
+  const [searchCompetitor, setSearchCompetitor] = useState("All");
+  const [searchTime, setSearchTime] = useState("Last 3 months");
+  const [targetedResults, setTargetedResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchAbort, setSearchAbort] = useState(null);
+
+  const [filterMarket, setFilterMarket] = useState("All");
+  const [filterSector, setFilterSector] = useState("All");
+  const [filterCompany, setFilterCompany] = useState("All");
+  const [sortBy, setSortBy] = useState("newest");
+
+  const [selectedSignals, setSelectedSignals] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [genStatus, setGenStatus] = useState("");
+  const [genAbort, setGenAbort] = useState(null);
+  const [generatedHyp, setGeneratedHyp] = useState(null);
+  const [rhsExpanded, setRhsExpanded] = useState(false);
+  const [top3, setTop3] = useState([null, null, null]);
+  const [activeSlot, setActiveSlot] = useState(0);
+  const [savedHyps, setSavedHyps] = useState([]);
+  const [expandedCard, setExpandedCard] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  // localStorage persistence
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("scout_state");
+      if (saved) {
+        const s = JSON.parse(saved);
+        if (s.top3) setTop3(s.top3);
+        if (s.activeSlot !== undefined) setActiveSlot(s.activeSlot);
+        if (s.savedHyps) setSavedHyps(s.savedHyps);
+        if (s.generatedHyp) setGeneratedHyp(s.generatedHyp);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("scout_state", JSON.stringify({ top3, activeSlot, savedHyps, generatedHyp }));
+    } catch {}
+  }, [top3, activeSlot, savedHyps, generatedHyp]);
+
+  useEffect(() => {
+    fetch("/api/hypotheses").then(r => r.json()).then(d => {
+      if (d?.length > 0) {
+        setHypothesis(d[0]);
+        if (d[0].levers) setLeverValues(Object.fromEntries(d[0].levers.map(l => [l.id, l.default])));
+        // Only set top3 from pipeline if no localStorage data
+        try { const saved = localStorage.getItem("scout_state"); if (!saved || !JSON.parse(saved).top3?.[0]) {
+          const mapped = d.map(h => ({ ...h, source_label: "Weekly scan", created: fmt(h.generated_date) }));
+          setTop3([mapped[0], mapped[1] || null, mapped[2] || null]);
+          setSavedHyps(mapped);
+        }} catch { const mapped = d.map(h => ({ ...h, source_label: "Weekly scan", created: fmt(h.generated_date) })); setTop3([mapped[0], mapped[1] || null, mapped[2] || null]); setSavedHyps(mapped); }
+      }
+    }).catch(e => console.log("FETCH ERROR:", e));
+  }, []);
+
+  if (!hypothesis) return <div style={{ minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Inter', system-ui, sans-serif" }}><div style={{ textAlign: "center" }}><div style={{ width: 48, height: 48, borderRadius: 14, background: C.scout, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}><Search style={{ width: 24, height: 24, color: "white" }} /></div><p style={{ fontSize: 14, color: C.muted }}>Loading Scout...</p></div></div>;
+
+  const h = top3[activeSlot] || hypothesis || {};
+
+  /* ─── API ─── */
+  async function investigateSignal(sig) {
+    try {
+      const r = await fetch("/api/research", { method: "POST", body: JSON.stringify({ max_tokens: 2000, tools: [{ type: "web_search_20250305", name: "web_search" }], messages: [{ role: "user", content: `You are Scout's Research Agent for Grab Holdings.\n\nSIGNAL: ${sig.title}\nDate: ${sig.date}\nCompetitor: ${sig.competitor}\nMarkets: ${(sig.markets || []).join(", ")}\nImpact: ${sig.impact}\n\nSearch for latest developments from the last 6 months. Return ONLY a JSON array (max 5). No prose. Each: { "date": "Mon DD, YYYY", "title": "headline", "implication": "one sentence" }. Sort newest first. Real events only. No em dashes.` }] }) });
+      const d = await r.json(); if (!d.content) return [];
+      const t = d.content.filter(i => i.type === "text").map(i => i.text).join("\n").replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+      const m = t.match(/\[[\s\S]*\]/); return m ? JSON.parse(m[0]) : [];
+    } catch { return []; }
+  }
+
+  async function runSearch(query, controller) {
+    try {
+      const r = await fetch("/api/research", { signal: controller?.signal, method: "POST", body: JSON.stringify({ max_tokens: 3000, tools: [{ type: "web_search_20250305", name: "web_search" }], messages: [{ role: "user", content: `You are Scout's Research Agent for Grab Holdings.\n\nQUERY: ${query}\n\nReturn ONLY a JSON array. Each: { "id": "r1", "date": "Mon DD, YYYY", "title": "headline", "competitor": "company", "sector": "Payments/Mobility/FinServ/Food Delivery/Logistics", "markets": ["XX"], "impact": "2-3 sentences", "tag": "THREAT/OPPORTUNITY/SHIFT" }. 5-8 signals, date desc. Real events only. No em dashes.` }] }) });
+      const d = await r.json(); if (!d.content) return [];
+      const t = d.content.filter(i => i.type === "text").map(i => i.text).join("\n").replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+      const m = t.match(/\[[\s\S]*\]/); return m ? JSON.parse(m[0]) : [];
+    } catch (e) { if (e.name === "AbortError") return []; throw e; }
+  }
+
+  async function generateHyp(signals, controller) {
+    setIsGenerating(true); setGenStatus("Analyzing signal patterns...");
+    try {
+      setTimeout(() => setGenStatus("Building assumptions..."), 3000);
+      setTimeout(() => setGenStatus("Constructing test plan..."), 6000);
+      const desc = signals.map((s, i) => `Signal ${i + 1}: ${s.title} (${s.date}, ${s.competitor}, ${inferSector(s)}, Markets: ${(s.markets || []).join(", ")}). Impact: ${s.impact}`).join("\n");
+      const r = await fetch("/api/research", { signal: controller?.signal, method: "POST", body: JSON.stringify({ max_tokens: 8000, messages: [{ role: "user", content: `You are Scout, a growth strategy agent for Grab Holdings in Southeast Asia.\n\nGenerate ONE hypothesis from these signals.\n\nSIGNALS:\n${desc}\n\nReturn ONLY valid JSON. No markdown, no backticks:\n{\n  "hypothesis_name": "2-4 word verb-style title like 'Launch AMP interop' or 'Defend driver supply'",\n  "hypothesis_statement": "If [action] within [timeframe], [metric] will [change] by [amount], because [reasoning].",\n  "posture": "defensive/expand/growth",\n  "urgency": 7,\n  "confidence": "high/medium/low",\n  "test_window": "90 days",\n  "suggested_owner": "role name",\n  "sector": "primary sector",\n  "primary_markets": ["XX"],\n  "assumptions": [{"id": "a1", "statement": "text", "confidence": "high/medium/low", "basis": "text", "pressure_test": "text", "linked_signals": ["s1"]}],\n  "kill_criteria": ["threshold"],\n  "levers": [{"id": "l1", "name": "name", "linked_assumption": "a1", "min": 0, "max": 100, "default": 50, "unit": "%"}],\n  "test_plan": {"what_to_test": ["test"], "data_scout_provides": ["item"], "data_team_gathers": ["item"], "success_criteria": ["metric >= threshold"], "timeline": [{"weeks": "Week 1-2", "task": "task", "owner": "team"}]}\n}\n\n4 assumptions, 3 kill criteria, 3 levers, 4 timeline entries. Concise. No em dashes.` }] }) });
+      const d = await r.json(); if (!d.content) return;
+      const t = d.content.filter(i => i.type === "text").map(i => i.text).join("\n").replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+      const m = t.match(/\{[\s\S]*\}/);
+      if (m) {
+        let j = m[0].replace(/,\s*}/g, "}").replace(/,\s*]/g, "]").replace(/\/\/[^\n]*/g, "").replace(/\u2014/g, "-").replace(/\u2013/g, "-");
+        const p = JSON.parse(j);
+        p.signals = signals.map((s, i) => ({ ...s, id: s.id || "s" + (i + 1) }));
+        p.id = "gen_" + Date.now(); p.source_label = "Generated"; p.created = fmt(new Date().toISOString()); p.generated_date = p.created;
+        setGeneratedHyp(p); setRhsExpanded(false);
+      }
+    } catch (e) { if (e.name !== "AbortError") console.error("Gen error:", e); }
+    finally { setIsGenerating(false); setGenAbort(null); }
+  }
+
+  /* ─── Helpers ─── */
+  function toggleSig(s) { setSelectedSignals(p => { const k = s.id || s.title; return p.find(x => (x.id || x.title) === k) ? p.filter(x => (x.id || x.title) !== k) : p.length >= 5 ? p : [...p, s]; }); }
+  function isSel(s) { return selectedSignals.some(x => (x.id || x.title) === (s.id || s.title)); }
+  function addTop3(hyp) { const i = top3.findIndex(s => s === null); if (i !== -1) { const n = [...top3]; n[i] = hyp; setTop3(n); setToast("Added to top 3"); } }
+  function rmTop3(i) { const n = [...top3]; n[i] = null; setTop3(n); if (activeSlot === i) { const next = n.findIndex(s => s !== null); if (next !== -1) setActiveSlot(next); } }
+  function saveHyp(hyp) { setSavedHyps(p => p.find(h => h.id === hyp.id) ? p : [hyp, ...p]); setToast("Saved to hypotheses"); }
+  function openGenFlow() { setShowModes(true); setResearchMode("found"); }
+
+  const rec = (() => {
+    const v1 = leverValues["l1"] ?? 65, v2 = leverValues["l2"] ?? 150, v3 = leverValues["l3"] ?? 15;
+    if (v1 < 45 || v3 > 30) return { label: "HYPOTHESIS AT RISK", color: "red", msg: "Key assumptions are breaking. Recommend delaying test and running further validation." };
+    if (v1 < 60 || v2 < 75) return { label: "TEST SMALLER FIRST", color: "amber", msg: "Marginal case. Recommend a limited pilot in one market before regional rollout." };
+    return { label: "GREEN LIGHT", color: "green", msg: "Assumption stack holds. Launch phased pilot. Expected conversion lift 4-7%." };
+  })();
+
+  // Filter + sort
+  let signals = [...(h.signals || [])].map(s => ({ ...s, sector: inferSector(s), markets: (s.markets || []).map(toCode) }));
+  if (filterMarket !== "All") signals = signals.filter(s => s.markets.some(m => m === toCode(filterMarket)));
+  if (filterSector !== "All") signals = signals.filter(s => s.sector.toLowerCase().includes(filterSector.toLowerCase()));
+  if (filterCompany !== "All") signals = signals.filter(s => (s.competitor || "").toLowerCase().includes(filterCompany.toLowerCase()));
+  signals.sort((a, b) => sortBy === "newest" ? new Date(b.date).getTime() - new Date(a.date).getTime() : new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const targetedSorted = [...targetedResults].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const curSignals = researchMode === "targeted" ? targetedSorted : signals;
+  const availComps = COMP_MAP[searchSector] || COMP_MAP["All"];
+  const allCompanies = [...new Set((h.signals || []).map(s => s.competitor).filter(Boolean))];
+
+  /* ─── Signal Card ─── */
+  const SigCard = ({ s, idx }) => {
+    const sel = isSel(s);
+    const sk = s.id || s.title;
+    const newsOpen = newsOpenSignal === sk;
+    const inv = investigatingSignal === sk;
+    const findings = investigationResults[sk] || [];
+    const edge = s.tag === "THREAT" ? C.redEdge : s.tag === "OPPORTUNITY" ? C.tealEdge : C.amberEdge;
+    const tagS = s.tag === "THREAT" ? { bg: C.redBg, c: C.redText } : s.tag === "OPPORTUNITY" ? { bg: C.tealBg, c: C.tealText } : { bg: C.amberBg, c: C.amberText };
+
+    return (
+      <div style={{ borderRadius: 16, overflow: "hidden", border: sel ? `2px solid ${C.grab}` : `1px solid ${C.border}`, background: sel ? C.grabXLight : C.card }}>
+        <div style={{ display: "flex" }}>
+          <div style={{ width: 5, flexShrink: 0, background: edge }} />
+          <div style={{ flex: 1, padding: "20px 22px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              {s.competitor && <span style={{ fontSize: 12, fontWeight: 600, color: C.text, background: sel ? "rgba(255,255,255,0.7)" : C.cardAlt, padding: "4px 10px", borderRadius: 8, display: "flex", alignItems: "center", gap: 4 }}><Building2 style={{ width: 12, height: 12, color: C.muted }} />{s.competitor}</span>}
+              <span style={{ fontSize: 12, fontWeight: 600, color: C.grabDarker, background: C.grabLight, padding: "4px 10px", borderRadius: 8, display: "flex", alignItems: "center", gap: 4 }}><Tag style={{ width: 12, height: 12 }} />{s.sector}</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 12, color: C.muted, display: "flex", alignItems: "center", gap: 4 }}><Calendar style={{ width: 12, height: 12 }} />{fmt(s.date)}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 99, background: tagS.bg, color: tagS.c }}>{s.tag || "SHIFT"}</span>
+              </div>
+              <button onClick={() => toggleSig(s)} style={{ width: 24, height: 24, borderRadius: 8, border: sel ? "none" : `2px solid ${C.border}`, background: sel ? C.grab : "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                {sel && <Check style={{ width: 14, height: 14, color: "white", strokeWidth: 3 }} />}
+              </button>
+            </div>
+            <p style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.45, marginBottom: 8 }}>{clean(s.title)}</p>
+            <p style={{ fontSize: 14, color: C.sub, lineHeight: 1.6, marginBottom: 14 }}>{clean(s.impact)}</p>
+            {(s.markets || []).length > 0 && (
+              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
+                <span style={{ fontSize: 11, color: C.muted }}>Markets impacted</span>
+                {s.markets.map(m => <span key={m} style={{ fontSize: 11, fontWeight: 600, color: C.sub, background: sel ? "rgba(255,255,255,0.7)" : C.cardAlt, padding: "3px 8px", borderRadius: 6, border: `1px solid ${C.border}` }}>{m}</span>)}
+              </div>
+            )}
+            <button onClick={async () => { if (newsOpen) { setNewsOpenSignal(null); return; } setNewsOpenSignal(sk); if (!findings.length && !inv) { setInvestigatingSignal(sk); const res = await investigateSignal(s); setInvestigationResults(p => ({ ...p, [sk]: res })); setInvestigatingSignal(null); } }} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: C.grabDark, background: C.grabLight, border: "none", padding: "7px 14px", borderRadius: 10, cursor: "pointer" }}>
+              <Newspaper style={{ width: 14, height: 14 }} />Latest news {newsOpen ? "▴" : "▾"}
+            </button>
+            {newsOpen && (
+              <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+                {inv ? <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.grab, fontSize: 13 }}><Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} />Searching...</div>
+                : findings.length > 0 ? <div>{findings.slice(0, 5).map((f, i) => <div key={i} style={{ borderRadius: 12, background: C.cardAlt, padding: "12px 14px", border: `1px solid ${C.border}`, marginBottom: 8 }}><span style={{ fontSize: 11, color: C.muted }}>{fmt(f.date)}</span><p style={{ fontSize: 13, fontWeight: 600, marginTop: 4 }}>{clean(f.title)}</p><p style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>{clean(f.implication)}</p></div>)}</div>
+                : <p style={{ fontSize: 12, color: C.muted }}>No recent articles found.</p>}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
-  const rec = computeRecommendation();
-
+  /* ═══ RENDER ═══ */
   return (
-    <div className="min-h-screen bg-gray-50" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            <span>←</span> Portfolio
-          </Link>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm" style={{ background: "linear-gradient(135deg, #0ea5e9, #0284c7)" }}>
-              <Search className="w-4 h-4 text-white" strokeWidth={2.5} />
-            </div>
-            <div>
-              <p className="text-base font-bold text-gray-900 leading-none">Scout</p>
-              <p className="text-[10px] text-gray-500 mt-0.5">Growth Intelligence</p>
-            </div>
+    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Inter', system-ui, sans-serif", color: C.text }}>
+      {toast && <Toast msg={toast} onClose={() => setToast(null)} />}
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+
+      {/* Header */}
+      <header style={{ background: "rgba(255,255,255,0.85)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${C.border}`, position: "sticky", top: 0, zIndex: 40 }}>
+        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "0 28px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 12, background: C.scout, display: "flex", alignItems: "center", justifyContent: "center" }}><Search style={{ width: 18, height: 18, color: "white" }} strokeWidth={2.5} /></div>
+            <span style={{ fontSize: 24, fontWeight: 800 }}>Scout</span>
+            <span style={{ color: C.border, fontSize: 20 }}>&#183;</span>
+            <span style={{ fontSize: 15, color: C.sub }}>Brings AI-powered rigor to help you make bolder strategic bets</span>
           </div>
-          <CompanyDropdown />
+          <CompanyDD />
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-8 text-xs text-gray-500">
-          <span className="flex items-center gap-1.5"><Activity className="w-3.5 h-3.5 text-emerald-500" /><span className="font-medium text-gray-700">Last run:</span> 4h ago</span>
-          <span><span className="font-medium text-gray-700">{h.signals_processed}</span> signals processed</span>
-          <span><span className="font-medium text-gray-700">{h.markets_analyzed}</span> markets analyzed</span>
-          <span><span className="font-medium text-gray-700">{h.competitors_tracked}</span> competitors tracked</span>
-          <span className="text-gray-400">Next scan: Sunday 6pm</span>
+      <main style={{ maxWidth: 1120, margin: "0 auto", padding: "32px 28px" }}>
+        {/* Stage Bar with descriptions */}
+        <div style={{ display: "flex", background: C.card, borderRadius: 16, border: `1px solid ${C.border}`, overflow: "hidden", marginBottom: 32 }}>
+          {STAGES.map((st, i) => { const act = activeTab === st.id; const Icon = st.icon; return (
+            <button key={st.id} onClick={() => setActiveTab(st.id)} style={{ flex: 1, padding: "16px 8px 14px", display: "flex", flexDirection: "column", alignItems: "center", gap: 5, background: act ? C.grabXLight : "transparent", border: "none", borderBottom: act ? `3px solid ${C.grab}` : "3px solid transparent", cursor: "pointer", position: "relative" }}>
+              <div style={{ width: 34, height: 34, borderRadius: 10, background: act ? C.grab : "#F1EFE8", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon style={{ width: 16, height: 16, color: act ? "white" : C.muted }} /></div>
+              <span style={{ fontSize: 13, fontWeight: 600, color: act ? C.grabDarker : C.muted }}>{st.label}</span>
+              <span style={{ fontSize: 10, color: act ? C.grabDark : C.muted }}>{st.desc}</span>
+              {i < STAGES.length - 1 && <div style={{ position: "absolute", right: 0, top: "20%", bottom: "20%", width: 1, background: C.border }} />}
+            </button>
+          ); })}
         </div>
 
-        <div className="rounded-3xl overflow-hidden bg-white shadow-sm border border-gray-100 mb-10">
-          <div className="p-8 md:p-10" style={{ background: "linear-gradient(135deg, #ecfeff 0%, #f0f9ff 50%, #fff7ed 100%)" }}>
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-white px-3 py-1.5 rounded-full" style={{ background: "linear-gradient(135deg, #0ea5e9, #0284c7)" }}>
-                <TrendingUp className="w-3 h-3" />{h.posture.toUpperCase()}
-              </span>
-              <span className="text-[11px] font-bold text-gray-600 bg-white px-3 py-1.5 rounded-full">Urgency {h.urgency}/10</span>
-              <ConfidencePill level={h.confidence.toLowerCase()} />
-              <span className="text-[11px] text-gray-500 ml-auto">Generated {h.generated_date}</span>
-            </div>
-            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">This week&apos;s hypothesis to test</p>
-            <p className="text-2xl md:text-3xl font-bold text-gray-900 leading-[1.25] mb-6">&ldquo;{h.hypothesis_statement}&rdquo;</p>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-600 mb-6">
-              <span><span className="font-semibold text-gray-800">Test window:</span> {h.test_window}</span>
-              <span><span className="font-semibold text-gray-800">Owner:</span> {h.suggested_owner}</span>
-              <span className="inline-flex items-center gap-1.5 text-emerald-700 font-semibold"><CheckCircle2 className="w-4 h-4" />Ready to assign</span>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <button onClick={() => setActiveTab("thought")} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors">
-                <Swords className="w-4 h-4" />Show me the assumptions
-              </button>
-              <button onClick={() => setActiveTab("communicator")} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border-2 border-gray-300 text-gray-900 text-sm font-semibold hover:border-gray-400 transition-colors">
-                <FileText className="w-4 h-4" />Show me the test plan
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            {TABS.map((tab) => {
-              const isActive = activeTab === tab.id;
-              const Icon = tab.icon;
-              return (
-                <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${isActive ? "bg-white shadow-sm text-gray-900 ring-1 ring-gray-200" : "text-gray-500 hover:text-gray-800 hover:bg-white/50"}`}>
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${isActive ? "" : "opacity-60"}`} style={isActive ? { background: "linear-gradient(135deg, #0ea5e9, #0284c7)" } : { background: "#f3f4f6" }}>
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-gray-600"}`} strokeWidth={2.5} />
-                  </div>
-                  <div className="text-left">
-                    <p className="leading-none">{tab.label}</p>
-                    <p className={`text-[10px] font-normal mt-0.5 ${isActive ? "text-gray-500" : "text-gray-400"}`}>{tab.subtitle}</p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white border border-gray-100 shadow-sm p-8 md:p-10">
-
-          {activeTab === "researcher" && (
-            <div>
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">What Scout gathered this week</h3>
-                <p className="text-sm text-gray-500">{h.signals_processed} signals processed · {h.signals.length} flagged as strategic · 3 shaped this week&apos;s hypothesis</p>
+        {/* ═══ SIGNALS TAB ═══ */}
+        {activeTab === "researcher" && (
+          <div>
+            <div style={{ marginBottom: 28 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <Trophy style={{ width: 20, height: 20, color: C.scout }} />
+                <span style={{ fontSize: 18, fontWeight: 600 }}>Your Top 3 Hypotheses</span>
               </div>
-              <div className="space-y-3">
-                {h.signals.map((s) => (
-                  <div key={s.id} className="rounded-2xl border border-gray-100 p-5 hover:border-gray-200 transition-colors">
-                    <div className="flex items-start justify-between gap-4 mb-2">
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-xs text-gray-500 font-medium">{s.date}</span>
-                        <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full">SCORE {s.score}</span>
-                        <span className="text-[10px] font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">{s.competitor}</span>
-                        {s.markets.map((m) => <span key={m} className="text-[10px] font-medium text-gray-500 bg-gray-50 px-2 py-0.5 rounded-full">{m}</span>)}
-                      </div>
-                      <a href={s.url} className="text-gray-400 hover:text-sky-600 transition-colors shrink-0"><ExternalLink className="w-4 h-4" /></a>
-                    </div>
-                    <p className="text-base font-semibold text-gray-900 mb-1">{s.title}</p>
-                    <p className="text-sm text-gray-600">{s.impact}</p>
-                    <p className="text-xs text-gray-400 mt-2">Source: {s.source}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "interpreter" && (
-            <div>
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">What Scout saw</h3>
-                <p className="text-sm text-gray-500">Two views: growth adjacencies scored on fit, and trends classified by trajectory.</p>
-              </div>
-              <div className="mb-10">
-                <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4">Adjacency map</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {h.adjacencies.map((a) => (
-                    <div key={a.name} className={`rounded-2xl p-5 border-2 ${a.fit === "high" ? "border-sky-200 bg-sky-50/50" : a.fit === "medium" ? "border-gray-200 bg-white" : "border-gray-100 bg-gray-50/50"}`}>
-                      <div className="flex items-center justify-between mb-3">
-                        <p className="font-bold text-gray-900">{a.name}</p>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${a.fit === "high" ? "bg-sky-100 text-sky-700" : a.fit === "medium" ? "bg-gray-100 text-gray-600" : "bg-gray-100 text-gray-400"}`}>{a.fit} fit</span>
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3"><span className="text-[10px] text-gray-500 w-24">Market size</span><div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className="h-full rounded-full" style={{ width: `${a.marketSize * 10}%`, background: "linear-gradient(90deg, #0ea5e9, #0284c7)" }} /></div><span className="text-[10px] font-bold text-gray-700 w-4">{a.marketSize}</span></div>
-                        <div className="flex items-center gap-3"><span className="text-[10px] text-gray-500 w-24">Right to win</span><div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className="h-full rounded-full" style={{ width: `${a.rightToWin * 10}%`, background: "linear-gradient(90deg, #0ea5e9, #0284c7)" }} /></div><span className="text-[10px] font-bold text-gray-700 w-4">{a.rightToWin}</span></div>
-                        <div className="flex items-center gap-3"><span className="text-[10px] text-gray-500 w-24">Competition</span><div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden"><div className="h-full rounded-full" style={{ width: `${a.competitive * 10}%`, background: "linear-gradient(90deg, #f97316, #ea580c)" }} /></div><span className="text-[10px] font-bold text-gray-700 w-4">{a.competitive}</span></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 rounded-2xl bg-sky-50 border border-sky-100 p-4">
-                  <p className="text-sm"><span className="font-bold text-sky-700">Top pick: Cross-border remittance.</span> <span className="text-sky-800">$47B market · Grab has payment license in 4 markets · Only Wise and Ant compete seriously.</span></p>
-                </div>
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4">Trend watch</h4>
-                <div className="space-y-3">
-                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
-                    <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">▲ Accelerating — act now</p>
-                    <ul className="space-y-1">{h.trends.accelerating.map((t) => <li key={t} className="text-sm text-gray-700">· {t}</li>)}</ul>
-                  </div>
-                  <div className="rounded-2xl border border-amber-200 bg-amber-50/30 p-4">
-                    <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2">→ Maturing — defend position</p>
-                    <ul className="space-y-1">{h.trends.maturing.map((t) => <li key={t} className="text-sm text-gray-700">· {t}</li>)}</ul>
-                  </div>
-                  <div className="rounded-2xl border border-gray-200 bg-gray-50/50 p-4">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">▼ Subsiding — deprioritize</p>
-                    <ul className="space-y-1">{h.trends.subsiding.map((t) => <li key={t} className="text-sm text-gray-500">· {t}</li>)}</ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "thought" && (
-            <div>
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Assumptions Scout is making</h3>
-                <p className="text-sm text-gray-500">This hypothesis rests on {h.assumptions.length} assumptions. The ones in red need pressure-testing before you commit.</p>
-              </div>
-              <div className="mb-10 rounded-2xl border border-gray-100 p-5">
-                <div className="flex items-center gap-2 mb-4"><Target className="w-4 h-4 text-gray-500" /><p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Framework applied: {h.framework_applied}</p></div>
-                <div className="space-y-2">
-                  {h.framework_analysis.map((f) => (
-                    <div key={f.force} className="flex items-center gap-4">
-                      <span className="text-sm text-gray-700 w-56 shrink-0">{f.force}</span>
-                      <div className="flex gap-1">
-                        {[1, 2, 3, 4, 5].map((n) => <div key={n} className={`w-4 h-4 rounded-full ${n <= f.rating ? f.rating >= 4 ? "bg-red-400" : f.rating === 3 ? "bg-amber-400" : "bg-emerald-400" : "bg-gray-200"}`} />)}
-                      </div>
-                      <span className="text-xs text-gray-500 flex-1">{f.note}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-3 mb-8">
-                {h.assumptions.map((a, i) => (
-                  <div key={a.id} className={`rounded-2xl border-2 p-5 ${a.confidence === "low" ? "border-red-200 bg-red-50/30" : "border-gray-100"}`}>
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex items-start gap-3">
-                        <span className="text-[11px] font-bold text-gray-400 mt-0.5">{String(i + 1).padStart(2, "0")}</span>
-                        <p className="font-semibold text-gray-900">{a.statement}</p>
-                      </div>
-                      <ConfidencePill level={a.confidence} />
-                    </div>
-                    <div className="ml-8 space-y-2 text-sm">
-                      <p><span className="text-gray-500">Based on:</span> <span className="text-gray-700">{a.basis}</span></p>
-                      <p><span className="text-gray-500">How to pressure-test:</span> <span className="text-gray-700">{a.pressure_test}</span></p>
-                      {a.linked_signals.length > 0 && <p className="text-xs text-sky-600">Linked signals: {a.linked_signals.join(", ")}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="rounded-2xl border-2 border-red-100 bg-red-50/30 p-5">
-                <div className="flex items-center gap-2 mb-3"><AlertCircle className="w-4 h-4 text-red-600" /><p className="text-xs font-bold text-red-700 uppercase tracking-wider">What would kill this hypothesis</p></div>
-                <ul className="space-y-2">{h.kill_criteria.map((k, i) => <li key={i} className="text-sm text-gray-700 flex gap-2"><span className="text-red-400 shrink-0">·</span>{k}</li>)}</ul>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "simulator" && (
-            <div>
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Sensitivity model</h3>
-                <p className="text-sm text-gray-500">These sliders test what happens if Scout&apos;s assumptions are wrong. Drag to see how the hypothesis changes.</p>
-              </div>
-              <div className="space-y-6 mb-8">
-                {h.levers.map((lever) => {
-                  const value = leverValues[lever.id];
-                  const assumption = h.assumptions.find((a) => a.id === lever.linked_assumption);
+              {/* 3-card grid */}
+              <div style={{ display: "flex", gap: 14, marginBottom: 4 }}>
+                {top3.map((slot, idx) => {
+                  const mkts = slot ? marketCodes(slot.primary_markets || slot.affected_markets || []) : [];
+                  const sector = slot ? inferSector(slot) : "";
+                  const name = slot ? shortName(slot) : "";
                   return (
-                    <div key={lever.id}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <p className="text-sm font-bold text-gray-900">{lever.name}</p>
-                          {assumption && <p className="text-[11px] text-gray-500 mt-0.5">Tests Assumption: {assumption.statement.substring(0, 60)}...</p>}
+                    <div key={idx} style={{ flex: 1 }}>
+                      {slot ? (
+                        <div style={{ background: activeSlot === idx ? C.grabXLight : C.card, border: activeSlot === idx ? `2px solid ${C.grab}` : `1px solid ${C.border}`, borderRadius: 16, padding: "16px 18px", minHeight: 150, display: "flex", flexDirection: "column", position: "relative" }}>
+
+                         <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap", marginBottom: 12 }}>
+                          {activeSlot === idx ? <span style={{ display: "inline-flex", alignItems: "center", gap: 3, background: C.grab, color: "white", fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 99 }}><Star style={{ width: 9, height: 9 }} />Active</span>
+                          : <button onClick={() => { setActiveSlot(idx); if (slot.levers) setLeverValues(Object.fromEntries(slot.levers.map(l => [l.id, l.default]))); }} style={{ fontSize: 9, fontWeight: 600, color: C.sub, background: C.cardAlt, padding: "2px 8px", borderRadius: 99, border: "none", cursor: "pointer" }}>Make active</button>}
+                          <span style={{ fontSize: 9, fontWeight: 600, color: C.grabDarker, background: activeSlot === idx ? "rgba(255,255,255,0.7)" : C.grabLight, padding: "2px 7px", borderRadius: 5, display: "flex", alignItems: "center", gap: 2 }}><Tag style={{ width: 8, height: 8 }} />{sector}</span>
+                          {mkts.slice(0, 3).map(m => <span key={m} style={{ fontSize: 9, fontWeight: 600, color: C.sub, background: activeSlot === idx ? "rgba(255,255,255,0.7)" : C.cardAlt, padding: "2px 6px", borderRadius: 4 }}>{m}</span>)}
+                          <button onClick={() => rmTop3(idx)} style={{ background: "none", border: "none", cursor: "pointer", color: C.muted, padding: 0, marginLeft: "auto" }}><X style={{ width: 12, height: 12 }} /></button>
                         </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-gray-900">{value}{lever.unit === "%" ? "%" : lever.unit}</p>
-                          <p className="text-[10px] text-gray-400">Scout assumed: {lever.default}{lever.unit === "%" ? "%" : lever.unit}</p>
+                        <p style={{ fontSize: 14, fontWeight: 600, color: C.text, lineHeight: 1.5, marginTop: "auto", marginBottom: 8 }}>{name}</p>
+                          <button onClick={() => setExpandedCard(expandedCard === idx ? null : idx)} style={{ alignSelf: "flex-end", fontSize: 11, color: C.grabDark, background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 2 }}>
+                            {expandedCard === idx ? <ChevronUp style={{ width: 14, height: 14 }} /> : <ChevronDown style={{ width: 14, height: 14 }} />}
+                          </button>
                         </div>
-                      </div>
-                      <input type="range" min={lever.min} max={lever.max} value={value} onChange={(e) => setLeverValues({ ...leverValues, [lever.id]: Number(e.target.value) })} className="w-full h-2 rounded-full appearance-none cursor-pointer accent-sky-500" />
-                      <div className="flex justify-between text-[10px] text-gray-400 mt-1"><span>{lever.min}{lever.unit === "%" ? "%" : lever.unit}</span><span>{lever.max}{lever.unit === "%" ? "%" : lever.unit}</span></div>
+                      ) : (
+                        <div onClick={openGenFlow} style={{ background: C.cardAlt, border: `2px dashed ${C.border}`, borderRadius: 16, padding: 18, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 150, cursor: "pointer" }}>
+                          <Plus style={{ width: 22, height: 22, color: C.muted }} />
+                          <p style={{ fontSize: 11, color: C.muted, marginTop: 6 }}>Generate new</p>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
-              <div className={`rounded-3xl p-6 md:p-8 ${rec.color === "red" ? "bg-red-50 border-2 border-red-200" : rec.color === "amber" ? "bg-amber-50 border-2 border-amber-200" : "bg-emerald-50 border-2 border-emerald-200"}`}>
-                <p className={`text-[11px] font-bold uppercase tracking-widest mb-3 ${rec.color === "red" ? "text-red-600" : rec.color === "amber" ? "text-amber-600" : "text-emerald-600"}`}>Scout&apos;s updated view</p>
-                <div className="flex items-center gap-3 mb-4">
-                  <Zap className={`w-6 h-6 ${rec.color === "red" ? "text-red-600" : rec.color === "amber" ? "text-amber-600" : "text-emerald-600"}`} />
-                  <p className="text-2xl font-bold text-gray-900">{rec.label}</p>
-                </div>
-                <p className="text-sm text-gray-700 leading-relaxed">{rec.message}</p>
-              </div>
-              <div className="mt-6">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Try preset scenarios</p>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    { name: "Scout's base case", vals: { l1: 65, l2: 150, l3: 15 } },
-                    { name: "Optimistic", vals: { l1: 85, l2: 300, l3: 8 } },
-                    { name: "Pessimistic", vals: { l1: 40, l2: 60, l3: 28 } },
-                    { name: "Ant fails to scale", vals: { l1: 65, l2: 40, l3: 15 } },
-                    { name: "GrabPay collapses", vals: { l1: 65, l2: 150, l3: 35 } },
-                  ].map((preset) => (
-                    <button key={preset.name} onClick={() => setLeverValues(preset.vals)} className="text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors">{preset.name}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
 
-          {activeTab === "communicator" && (
-            <div>
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Test plan — Wallet-Agnostic Checkout Pilot</h3>
-                  <p className="text-sm text-gray-500">A complete plan a growth manager could take to leadership and get resourced.</p>
-                </div>
-                <button className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors">
-                  <Download className="w-4 h-4" />Download PDF
+              {/* Full-width expanded card */}
+              {expandedCard !== null && top3[expandedCard] && (() => {
+                const slot = top3[expandedCard];
+                const mkts = marketCodes(slot.primary_markets || slot.affected_markets || []);
+                const sector = inferSector(slot);
+                return (
+                  <div style={{ borderRadius: 16, background: C.grabXLight, border: `2px solid ${C.grab}`, padding: "24px 28px", marginTop: 10, marginBottom: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <p style={{ fontSize: 18, fontWeight: 700, color: C.grabDarker }}>{shortName(slot)}</p>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: C.grabDarker, background: "rgba(255,255,255,0.7)", padding: "3px 10px", borderRadius: 8, display: "flex", alignItems: "center", gap: 3 }}><Tag style={{ width: 10, height: 10 }} />{sector}</span>
+                        {mkts.map(m => <span key={m} style={{ fontSize: 11, fontWeight: 600, color: C.sub, background: "rgba(255,255,255,0.7)", padding: "2px 8px", borderRadius: 6 }}>{m}</span>)}
+                      </div>
+                      <button onClick={() => setExpandedCard(null)} style={{ fontSize: 12, fontWeight: 600, color: C.grabDark, background: "rgba(255,255,255,0.7)", border: "none", padding: "5px 12px", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 3 }}><ChevronUp style={{ width: 13, height: 13 }} />Collapse</button>
+                    </div>
+                    <p style={{ fontSize: 15, color: C.text, lineHeight: 1.6, marginBottom: 14 }}>{clean(slot.hypothesis_statement)}</p>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, background: "rgba(255,255,255,0.7)", padding: "4px 12px", borderRadius: 99 }}>Urgency {slot.urgency}/10</span>
+                      <ConfPill level={(slot.confidence || "medium").toLowerCase()} />
+                      <span style={{ fontSize: 12, color: C.sub }}>{slot.test_window} - {clean(slot.suggested_owner)}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                      {[{ l: "Assumptions", v: (slot.assumptions || []).length }, { l: "Kill criteria", v: (slot.kill_criteria || []).length }, { l: "Test plan", v: `${(slot.test_plan?.timeline || []).length} steps` }].map(m => (
+                        <div key={m.l} style={{ flex: 1, background: "rgba(255,255,255,0.7)", borderRadius: 12, padding: "12px 14px" }}><p style={{ fontSize: 10, color: C.muted, textTransform: "uppercase" }}>{m.l}</p><p style={{ fontSize: 16, fontWeight: 700, marginTop: 4 }}>{m.v}</p></div>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {[{ l: "Patterns", i: BarChart3, t: "interpreter" }, { l: "Stress test", i: Shield, t: "thought" }, { l: "Simulate", i: Sliders, t: "simulator" }, { l: "Test plan", i: ClipboardCheck, t: "communicator" }].map(b => (
+                        <button key={b.t} onClick={() => { setActiveTab(b.t); setExpandedCard(null); }} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 13, fontWeight: 600, color: C.text, background: C.card, border: `1px solid ${C.border}`, borderRadius: 10, padding: "10px 0", cursor: "pointer" }}><b.i style={{ width: 15, height: 15, color: C.sub }} />{b.l}</button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Buttons */}
+              <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+                <button onClick={() => { if (showModes) { setShowModes(false); setResearchMode(null); } else openGenFlow(); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 20px", borderRadius: 12, border: `1px solid ${C.border}`, background: C.card, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>
+                  <Sparkles style={{ width: 18, height: 18, color: C.scout }} />{showModes ? "Close" : "Generate new hypothesis"}
+                </button>
+                <button onClick={() => { setShowModes(true); setResearchMode("saved"); }} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 20px", borderRadius: 12, border: `1px solid ${C.border}`, background: C.card, cursor: "pointer", fontSize: 14, fontWeight: 600 }}>
+                  <BookmarkPlus style={{ width: 18, height: 18, color: C.sub }} />Saved hypotheses
+                </button>
+                <button onClick={() => setActiveTab("interpreter")} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 20px", borderRadius: 12, border: "none", background: C.grab, cursor: "pointer", fontSize: 14, fontWeight: 600, color: "white" }}>
+                  Next stage<ArrowRight style={{ width: 16, height: 16 }} />
                 </button>
               </div>
-              <div className="rounded-2xl bg-gray-50 border border-gray-100 p-5 mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Date</p><p className="font-semibold text-gray-900">{h.generated_date}</p></div>
-                <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Prepared by</p><p className="font-semibold text-gray-900">Scout</p></div>
-                <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">For</p><p className="font-semibold text-gray-900">Head of Growth, Grab</p></div>
-                <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Owner</p><p className="font-semibold text-gray-900">{h.suggested_owner}</p></div>
-              </div>
-              <div className="mb-6">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Hypothesis</p>
-                <p className="text-base font-semibold text-gray-900 leading-relaxed">&ldquo;{h.hypothesis_statement}&rdquo;</p>
-              </div>
-              <div className="mb-6">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">What to test</p>
-                <ol className="space-y-2">
-                  {h.test_plan.what_to_test.map((item, i) => (
-                    <li key={i} className="text-sm text-gray-700 flex gap-3">
-                      <span className="w-6 h-6 rounded-full bg-sky-100 text-sky-700 text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
-                      {item}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div className="rounded-2xl border border-gray-100 p-5">
-                  <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3">Data Scout provides</p>
-                  <ul className="space-y-2">
-                    {h.test_plan.data_scout_provides.map((d, i) => <li key={i} className="text-sm text-gray-700 flex gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />{d}</li>)}
-                  </ul>
-                </div>
-                <div className="rounded-2xl border border-gray-100 p-5">
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-3">Data team needs to gather</p>
-                  <ul className="space-y-2">
-                    {h.test_plan.data_team_gathers.map((d, i) => <li key={i} className="text-sm text-gray-700 flex gap-2"><AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />{d}</li>)}
-                  </ul>
-                </div>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div className="rounded-2xl border-2 border-emerald-100 bg-emerald-50/30 p-5">
-                  <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3">Success criteria</p>
-                  <ul className="space-y-2">{h.test_plan.success_criteria.map((s, i) => <li key={i} className="text-sm text-gray-700">· {s}</li>)}</ul>
-                </div>
-                <div className="rounded-2xl border-2 border-red-100 bg-red-50/30 p-5">
-                  <p className="text-xs font-bold text-red-700 uppercase tracking-wider mb-3">Kill criteria</p>
-                  <ul className="space-y-2">{h.kill_criteria.slice(0, 3).map((k, i) => <li key={i} className="text-sm text-gray-700">· {k}</li>)}</ul>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Timeline</p>
-                <div className="space-y-2">
-                  {h.test_plan.timeline.map((t, i) => (
-                    <div key={i} className="flex items-center gap-4 py-3 border-b border-gray-100 last:border-0">
-                      <span className="text-xs font-bold text-gray-500 w-20 shrink-0">{t.weeks}</span>
-                      <span className="text-sm text-gray-900 flex-1">{t.task}</span>
-                      <span className="text-xs text-sky-700 font-semibold bg-sky-50 px-3 py-1 rounded-full">{t.owner}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
-          )}
 
-        </div>
+            {/* Modes */}
+            {showModes && researchMode !== "saved" && (
+              <div>
+                <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+                  {[{ id: "found", icon: Radar, label: "Weekly scan", desc: "Signals from Scout's latest automated scan of 31 competitors across 8 markets." },
+                    { id: "targeted", icon: Target, label: "Targeted search", desc: "Search for signals by market, sector, and competitor. Real-time web search." }
+                  ].map(mode => (
+                    <button key={mode.id} onClick={() => setResearchMode(mode.id)} style={{ flex: 1, padding: "16px 18px", borderRadius: 14, border: researchMode === mode.id ? `2px solid ${C.grab}` : `1px solid ${C.border}`, background: researchMode === mode.id ? C.grabXLight : C.card, cursor: "pointer", textAlign: "left" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 10, background: researchMode === mode.id ? C.grab : "#F1EFE8", display: "flex", alignItems: "center", justifyContent: "center" }}><mode.icon style={{ width: 16, height: 16, color: researchMode === mode.id ? "white" : C.muted }} /></div>
+                        <span style={{ fontSize: 14, fontWeight: 600 }}>{mode.label}</span>
+                      </div>
+                      <p style={{ fontSize: 12, color: C.sub, lineHeight: 1.5 }}>{mode.desc}</p>
+                    </button>
+                  ))}
+                </div>
 
-        <div className="mt-10 py-6 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
-          <span>Scout is a portfolio project by Krittika Takiar. This is a demo running on real signals with a placeholder hypothesis.</span>
-          <Link href="/" className="hover:text-gray-600">← Back to portfolio</Link>
+                {/* Filter bar for weekly scan */}
+                {researchMode === "found" && (
+                  <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
+                    <Filter style={{ width: 14, height: 14, color: C.muted }} />
+                    {[{ l: "Market", v: filterMarket, set: setFilterMarket, opts: ["All", ...new Set(signals.flatMap(s => s.markets))] },
+                      { l: "Sector", v: filterSector, set: setFilterSector, opts: ["All", ...new Set(signals.map(s => s.sector).filter(Boolean))] },
+                      { l: "Company", v: filterCompany, set: setFilterCompany, opts: ["All", ...allCompanies] },
+                    ].map(f => <select key={f.l} value={f.v} onChange={e => f.set(e.target.value)} style={{ fontSize: 12, padding: "6px 10px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, color: C.text, fontWeight: 500 }}>{f.opts.map(o => <option key={o} value={o}>{f.l}: {o}</option>)}</select>)}
+                    <button onClick={() => setSortBy(sortBy === "newest" ? "oldest" : "newest")} style={{ fontSize: 12, padding: "6px 10px", borderRadius: 8, border: `1px solid ${C.border}`, background: C.card, cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontWeight: 500 }}>
+                      <SortDesc style={{ width: 12, height: 12 }} />{sortBy === "newest" ? "Newest first" : "Oldest first"}
+                    </button>
+                  </div>
+                )}
+
+                {/* Targeted search */}
+                {researchMode === "targeted" && (
+                  <div style={{ background: C.card, borderRadius: 16, padding: 22, border: `1px solid ${C.border}`, marginBottom: 20 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                      <p style={{ fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}><Filter style={{ width: 16, height: 16, color: C.sub }} />Search filters</p>
+                      <button onClick={() => { setSearchMarket("All"); setSearchSector("All"); setSearchCompetitor("All"); setSearchTime("Last 3 months"); setTargetedResults([]); }} style={{ fontSize: 12, color: C.muted, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}><RefreshCw style={{ width: 12, height: 12 }} />Reset</button>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, marginBottom: 16 }}>
+                      {[{ l: "Market", i: MapPin, v: searchMarket, set: setSearchMarket, opts: MARKETS_LIST },
+                        { l: "Sector", i: Tag, v: searchSector, set: v => { setSearchSector(v); setSearchCompetitor("All"); }, opts: SECTORS },
+                        { l: "Competitor", i: Building2, v: searchCompetitor, set: setSearchCompetitor, opts: ["All", ...availComps] },
+                        { l: "Time range", i: Calendar, v: searchTime, set: setSearchTime, opts: TIME_RANGES },
+                      ].map(f => <div key={f.l}><label style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, display: "flex", alignItems: "center", gap: 4 }}><f.i style={{ width: 12, height: 12, color: C.muted }} />{f.l}</label><select value={f.v} onChange={e => f.set(e.target.value)} style={{ width: "100%", fontSize: 13, borderRadius: 10, border: `1px solid ${C.border}`, padding: "10px 12px", background: C.card, color: C.text, fontWeight: 500 }}>{f.opts.map(o => <option key={o}>{o}</option>)}</select></div>)}
+                    </div>
+                    <div style={{ display: "flex", gap: 10 }}>
+                      <button onClick={async () => { const ctrl = new AbortController(); setSearchAbort(ctrl); setIsSearching(true); const q = `${searchCompetitor !== "All" ? searchCompetitor : "Grab competitors"} ${searchSector !== "All" ? searchSector : ""} ${searchMarket !== "All" ? "in " + searchMarket : "in Southeast Asia"} ${searchTime}`; const res = await runSearch(q, ctrl); setTargetedResults(res); setIsSearching(false); setSearchAbort(null); }} disabled={isSearching} style={{ flex: 1, padding: "12px 0", borderRadius: 12, background: C.text, color: "white", border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, opacity: isSearching ? 0.7 : 1 }}>
+                        {isSearching ? <><Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} />Searching...</> : <><Search style={{ width: 16, height: 16 }} />Search</>}
+                      </button>
+                      {isSearching && <button onClick={() => { searchAbort?.abort(); setIsSearching(false); setSearchAbort(null); }} style={{ padding: "12px 20px", borderRadius: 12, background: C.redBg, color: C.redText, border: `1px solid ${C.redEdge}`, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Stop</button>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Two column: signals + RHS */}
+                <div style={{ display: "flex", gap: 20 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 12, color: C.muted, marginBottom: 12 }}>{curSignals.length} signals{selectedSignals.length > 0 ? ` - ${selectedSignals.length} selected` : ""}</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      {curSignals.map((s, i) => <SigCard key={s.id || i} s={s} idx={i} />)}
+                      {researchMode === "targeted" && !isSearching && !targetedResults.length && (
+                        <div style={{ borderRadius: 16, background: C.cardAlt, border: `1px solid ${C.border}`, padding: "40px 0", textAlign: "center" }}><Target style={{ width: 28, height: 28, color: C.muted, margin: "0 auto 8px" }} /><p style={{ fontSize: 13, color: C.muted }}>Set filters and search</p></div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* RHS */}
+                  <div style={{ width: 280, flexShrink: 0 }}>
+                    {generatedHyp ? (
+                      <div>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8, display: "flex", alignItems: "center", gap: 4 }}><Sparkles style={{ width: 12, height: 12, color: C.scout }} />Generated hypothesis</p>
+                        <div style={{ borderRadius: 16, border: `2px solid ${C.grab}`, background: C.grabXLight, padding: "18px 16px" }}>
+                          <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 10 }}>
+                            {generatedHyp.sector && <span style={{ fontSize: 11, fontWeight: 500, color: C.grabDarker, background: "rgba(255,255,255,0.7)", padding: "3px 10px", borderRadius: 8, display: "flex", alignItems: "center", gap: 3 }}><Tag style={{ width: 10, height: 10 }} />{generatedHyp.sector}</span>}
+                            {(generatedHyp.primary_markets || []).map(m => <span key={m} style={{ fontSize: 11, fontWeight: 600, color: C.sub, background: "rgba(255,255,255,0.7)", padding: "2px 8px", borderRadius: 6 }}>{m}</span>)}
+                          </div>
+                          <p style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.5, marginBottom: 10 }}>{shortName(generatedHyp)}</p>
+                          <div style={{ display: "flex", gap: 5, marginBottom: 12 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, background: "rgba(255,255,255,0.7)", padding: "3px 9px", borderRadius: 99 }}>U:{generatedHyp.urgency}</span>
+                            <ConfPill level={(generatedHyp.confidence || "medium").toLowerCase()} />
+                          </div>
+                          <button onClick={() => setRhsExpanded(!rhsExpanded)} style={{ width: "100%", padding: "8px 0", borderRadius: 10, fontSize: 12, fontWeight: 600, color: C.grabDark, background: C.card, border: `1px solid ${C.grab}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 12 }}>
+                            <Eye style={{ width: 13, height: 13 }} />{rhsExpanded ? "Collapse" : "Read more"}
+                          </button>
+                          {rhsExpanded && (
+                            <div style={{ marginBottom: 12 }}>
+                              <p style={{ fontSize: 12, color: C.text, lineHeight: 1.6, marginBottom: 12 }}>"{clean(generatedHyp.hypothesis_statement)}"</p>
+                              {[{ l: "Assumptions", v: `${(generatedHyp.assumptions || []).length} - ${(generatedHyp.assumptions || []).filter(a => a.confidence === "low").length} low` },
+                                { l: "Kill criteria", v: (generatedHyp.kill_criteria || []).length },
+                                { l: "Test plan", v: `${(generatedHyp.test_plan?.timeline || []).length} steps` },
+                                { l: "Owner", v: clean(generatedHyp.suggested_owner) },
+                                { l: "Window", v: generatedHyp.test_window },
+                              ].map(r => <div key={r.l} style={{ display: "flex", justifyContent: "space-between", padding: "6px 10px", background: "rgba(255,255,255,0.7)", borderRadius: 8, marginBottom: 4, fontSize: 12 }}><span style={{ color: C.muted }}>{r.l}</span><span style={{ fontWeight: 600 }}>{r.v}</span></div>)}
+                            </div>
+                          )}
+                          <div style={{ display: "flex", gap: 6 }}>
+                            <button onClick={() => { addTop3(generatedHyp); saveHyp(generatedHyp); setGeneratedHyp(null); setSelectedSignals([]); }} disabled={!top3.includes(null)} style={{ flex: 1, padding: "9px 0", borderRadius: 10, fontSize: 12, fontWeight: 700, color: "white", background: C.grab, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4, opacity: top3.includes(null) ? 1 : 0.5 }}><Star style={{ width: 13, height: 13 }} />Top 3</button>
+                            <button onClick={() => { saveHyp(generatedHyp); setGeneratedHyp(null); setSelectedSignals([]); }} style={{ padding: "9px 12px", borderRadius: 10, border: `1px solid ${C.border}`, background: C.card, cursor: "pointer" }}><BookmarkPlus style={{ width: 14, height: 14, color: C.sub }} /></button>
+                            <button onClick={() => { setGeneratedHyp(null); setSelectedSignals([]); }} style={{ padding: "9px 12px", borderRadius: 10, border: `1px solid ${C.border}`, background: C.card, cursor: "pointer" }}><Trash2 style={{ width: 14, height: 14, color: C.muted }} /></button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 8, display: "flex", alignItems: "center", gap: 4 }}><Sparkles style={{ width: 12, height: 12, color: C.muted }} />Hypothesis preview</p>
+                        {/* Scout suggests when signals are loaded but nothing generated yet */}
+                        {curSignals.length >= 3 && selectedSignals.length === 0 ? (
+                          <div>
+                            <div style={{ borderRadius: 16, background: C.amberBg, border: `1px solid ${C.amberEdge}`, padding: "16px" }}>
+                              <p style={{ fontSize: 12, fontWeight: 600, color: C.amberText, marginBottom: 10, display: "flex", alignItems: "center", gap: 4 }}><Lightbulb style={{ width: 13, height: 13 }} />Scout suggests these combinations</p>
+                              {curSignals.length >= 2 && (
+                                <div style={{ marginBottom: 8 }}>
+                                  <p style={{ fontSize: 12, color: C.sub, lineHeight: 1.4, marginBottom: 8 }}>Signals {curSignals.slice(0, 2).map(s => `"${(s.title || "").substring(0, 25)}..."`).join(" + ")} form a <span style={{ fontWeight: 600, color: C.text }}>{inferSector(curSignals[0])}</span> pattern</p>
+                                  <button onClick={() => { setSelectedSignals(curSignals.slice(0, 2)); }} style={{ width: "100%", fontSize: 11, fontWeight: 600, color: C.amberText, background: "rgba(255,255,255,0.7)", border: `1px solid ${C.amberEdge}`, padding: "6px 10px", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}><Check style={{ width: 12, height: 12 }} />Select these 2</button>
+                                </div>
+                              )}
+                              {curSignals.length >= 4 && (
+                                <div>
+                                  <p style={{ fontSize: 12, color: C.sub, lineHeight: 1.4, marginBottom: 8 }}>Signals {curSignals.slice(2, 4).map(s => `"${(s.title || "").substring(0, 25)}..."`).join(" + ")} show a <span style={{ fontWeight: 600, color: C.text }}>{inferSector(curSignals[2])}</span> shift</p>
+                                  <button onClick={() => { setSelectedSignals(curSignals.slice(2, 4)); }} style={{ width: "100%", fontSize: 11, fontWeight: 600, color: C.amberText, background: "rgba(255,255,255,0.7)", border: `1px solid ${C.amberEdge}`, padding: "6px 10px", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}><Check style={{ width: 12, height: 12 }} />Select these 2</button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ borderRadius: 16, border: `2px dashed ${C.border}`, background: C.cardAlt, padding: "40px 16px", textAlign: "center" }}>
+                            <Sparkles style={{ width: 28, height: 28, color: C.muted, margin: "0 auto 8px" }} />
+                            <p style={{ fontSize: 13, color: C.muted }}>Select signals and generate</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Floating bar */}
+                {selectedSignals.length > 0 && (
+                  <div style={{ position: "sticky", bottom: 24, marginTop: 20, borderRadius: 16, background: C.text, color: "white", padding: "14px 22px", boxShadow: "0 8px 32px rgba(0,0,0,0.18)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 10, background: C.grab, display: "flex", alignItems: "center", justifyContent: "center" }}><Check style={{ width: 16, height: 16 }} /></div>
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>{selectedSignals.length} signal{selectedSignals.length > 1 ? "s" : ""}</span>
+                      <button onClick={() => setSelectedSignals([])} style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", background: "none", border: "none", cursor: "pointer" }}>Clear</button>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => { const ctrl = new AbortController(); setGenAbort(ctrl); generateHyp(selectedSignals, ctrl); }} disabled={isGenerating} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 22px", borderRadius: 12, background: C.card, color: C.text, fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", opacity: isGenerating ? 0.7 : 1 }}>
+                        {isGenerating ? <><Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite" }} />{genStatus}</> : <><Sparkles style={{ width: 16, height: 16, color: C.scout }} />Generate</>}
+                      </button>
+                      {isGenerating && <button onClick={() => { genAbort?.abort(); setIsGenerating(false); setGenAbort(null); }} style={{ padding: "10px 16px", borderRadius: 12, background: "rgba(255,255,255,0.15)", color: "white", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Stop</button>}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Saved */}
+            {showModes && researchMode === "saved" && (
+              <div>
+                <p style={{ fontSize: 12, color: C.muted, marginBottom: 12 }}>{savedHyps.length} hypotheses saved</p>
+                {!savedHyps.length ? <div style={{ borderRadius: 16, border: `2px dashed ${C.border}`, padding: "48px 0", textAlign: "center", background: C.card }}><BookmarkPlus style={{ width: 28, height: 28, color: C.muted, margin: "0 auto 8px" }} /><p style={{ fontSize: 14, color: C.muted }}>No saved hypotheses yet</p></div>
+                : <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {savedHyps.map((sh, idx) => {
+                    const inT3 = top3.some(t => t && t.id === sh.id);
+                    const mkts = marketCodes(sh.primary_markets || sh.affected_markets || []);
+                    return (
+                      <div key={sh.id || idx} style={{ borderRadius: 16, background: C.card, border: `1px solid ${C.border}`, padding: "20px 22px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}>
+                              <span style={{ fontSize: 11, fontWeight: 500, color: C.grabDarker, background: C.grabLight, padding: "3px 10px", borderRadius: 8, display: "flex", alignItems: "center", gap: 3 }}><Tag style={{ width: 10, height: 10 }} />{inferSector(sh)}</span>
+                              {mkts.slice(0, 4).map(m => <span key={m} style={{ fontSize: 11, fontWeight: 600, color: C.sub, background: C.cardAlt, padding: "2px 8px", borderRadius: 6 }}>{m}</span>)}
+                              <span style={{ fontSize: 10, fontWeight: 700, background: C.cardAlt, padding: "3px 9px", borderRadius: 99 }}>U:{sh.urgency}</span>
+                              <ConfPill level={(sh.confidence || "medium").toLowerCase()} />
+                            </div>
+                            <p style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.5 }}>{shortName(sh)}</p>
+                            <p style={{ fontSize: 11, color: C.muted, marginTop: 6 }}>{sh.source_label} - {sh.created}</p>
+                          </div>
+                          {inT3 ? <span style={{ fontSize: 11, fontWeight: 600, color: C.grab, background: C.grabLight, padding: "6px 14px", borderRadius: 99, flexShrink: 0 }}>In top 3</span>
+                          : <button onClick={() => addTop3(sh)} disabled={!top3.includes(null)} style={{ fontSize: 11, fontWeight: 600, color: C.grab, background: C.grabLight, padding: "6px 14px", borderRadius: 99, border: "none", cursor: "pointer", flexShrink: 0, opacity: top3.includes(null) ? 1 : 0.5 }}>Add to top 3</button>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ═══ PATTERNS ═══ */}
+        {activeTab === "interpreter" && (
+          <div style={{ background: C.card, borderRadius: 20, border: `1px solid ${C.border}`, padding: "36px 40px" }}>
+            <HypContext h={h} />
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 6, display: "flex", alignItems: "center", gap: 10 }}><BarChart3 style={{ width: 22, height: 22, color: C.scout }} />Growth patterns</h3>
+            <p style={{ fontSize: 14, color: C.sub, marginBottom: 28 }}>Adjacencies scored on fit, and trends classified by trajectory.</p>
+            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>Adjacency map</h4>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 32 }}>
+              {(h.adjacencies || []).map(a => (
+                <div key={a.name} style={{ borderRadius: 14, padding: 22, border: a.fit === "high" ? `2px solid ${C.grab}` : `1px solid ${C.border}`, background: a.fit === "high" ? C.grabXLight : C.card }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}><p style={{ fontWeight: 700 }}>{a.name}</p><span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", padding: "3px 9px", borderRadius: 99, background: a.fit === "high" ? C.grabLight : C.cardAlt, color: a.fit === "high" ? C.grabDarker : C.sub }}>{a.fit} fit</span></div>
+                  {[{ l: "Market size", v: a.marketSize, c: C.grab }, { l: "Right to win", v: a.rightToWin, c: C.grab }, { l: "Competition", v: a.competitive, c: C.scout }].map(b => (
+                    <div key={b.l} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}><span style={{ fontSize: 11, color: C.muted, width: 90 }}>{b.l}</span><div style={{ flex: 1, height: 6, background: C.cardAlt, borderRadius: 99, overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 99, background: b.c, width: `${b.v * 10}%` }} /></div><span style={{ fontSize: 11, fontWeight: 700, width: 16 }}>{b.v}</span></div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <h4 style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>Trend watch</h4>
+            {[{ l: "Accelerating", d: h.trends?.accelerating, bg: C.tealBg, c: C.tealText, b: C.tealEdge },
+              { l: "Maturing", d: h.trends?.maturing, bg: C.amberBg, c: C.amberText, b: C.amberEdge },
+              { l: "Subsiding", d: h.trends?.subsiding, bg: C.cardAlt, c: C.muted, b: C.border },
+            ].map(t => (
+              <div key={t.l} style={{ borderRadius: 14, border: `1px solid ${t.b}`, background: t.bg, padding: "14px 18px", marginBottom: 10 }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: t.c, marginBottom: 8 }}>{t.l}</p>
+                {(t.d || []).map(item => <p key={item} style={{ fontSize: 14, marginBottom: 4 }}>- {clean(item)}</p>)}
+              </div>
+            ))}
+            <NextStage current="interpreter" setTab={setActiveTab} />
+          </div>
+        )}
+
+        {/* ═══ STRESS TEST ═══ */}
+        {activeTab === "thought" && (
+          <div style={{ background: C.card, borderRadius: 20, border: `1px solid ${C.border}`, padding: "36px 40px" }}>
+            <HypContext h={h} />
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 6, display: "flex", alignItems: "center", gap: 10 }}><Shield style={{ width: 22, height: 22, color: C.scout }} />Stress testing assumptions</h3>
+            <p style={{ fontSize: 14, color: C.sub, marginBottom: 28 }}>This hypothesis rests on {(h.assumptions || []).length} assumptions.</p>
+            {h.framework_applied && (
+              <div style={{ borderRadius: 14, border: `1px solid ${C.border}`, background: C.cardAlt, padding: "18px 22px", marginBottom: 28 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", marginBottom: 14 }}>{h.framework_applied}</p>
+                {(h.framework_analysis || []).map(f => (
+                  <div key={f.force} style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 8 }}>
+                    <span style={{ fontSize: 13, width: 180, flexShrink: 0 }}>{f.force}</span>
+                    <div style={{ display: "flex", gap: 3 }}>{[1,2,3,4,5].map(n => <div key={n} style={{ width: 14, height: 14, borderRadius: 99, background: n <= f.rating ? f.rating >= 4 ? C.redEdge : f.rating === 3 ? C.amberEdge : C.tealEdge : C.cardAlt }} />)}</div>
+                    <span style={{ fontSize: 12, color: C.sub, flex: 1 }}>{clean(f.note)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
+              {(h.assumptions || []).map((a, i) => (
+                <div key={a.id} style={{ borderRadius: 14, border: a.confidence === "low" ? `2px solid ${C.redEdge}` : `1px solid ${C.border}`, background: a.confidence === "low" ? C.redBg : C.card, padding: "20px 22px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 10 }}>
+                    <div style={{ display: "flex", gap: 10 }}><span style={{ fontSize: 11, fontWeight: 700, color: C.muted, marginTop: 2 }}>{String(i + 1).padStart(2, "0")}</span><p style={{ fontSize: 15, fontWeight: 600 }}>{clean(a.statement)}</p></div>
+                    <ConfPill level={a.confidence} />
+                  </div>
+                  <div style={{ marginLeft: 30, fontSize: 14 }}>
+                    <p style={{ marginBottom: 4 }}><span style={{ color: C.muted }}>Based on:</span> {clean(a.basis)}</p>
+                    <p><span style={{ color: C.muted }}>Pressure-test:</span> {clean(a.pressure_test)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ borderRadius: 14, border: `2px solid ${C.redEdge}`, background: C.redBg, padding: "18px 22px" }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: C.redText, textTransform: "uppercase", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}><AlertCircle style={{ width: 14, height: 14 }} />Kill criteria</p>
+              {(h.kill_criteria || []).map((k, i) => <p key={i} style={{ fontSize: 14, marginBottom: 6 }}>- {clean(k)}</p>)}
+            </div>
+            <NextStage current="thought" setTab={setActiveTab} />
+          </div>
+        )}
+
+        {/* ═══ SIMULATE ═══ */}
+        {activeTab === "simulator" && (
+          <div style={{ background: C.card, borderRadius: 20, border: `1px solid ${C.border}`, padding: "36px 40px" }}>
+            <HypContext h={h} />
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 6, display: "flex", alignItems: "center", gap: 10 }}><Sliders style={{ width: 22, height: 22, color: C.scout }} />Sensitivity model</h3>
+            <p style={{ fontSize: 14, color: C.sub, marginBottom: 28 }}>Drag sliders to test what happens if assumptions are wrong.</p>
+            {(h.levers || []).map(lever => {
+              const val = leverValues[lever.id] ?? lever.default;
+              const asn = (h.assumptions || []).find(a => a.id === lever.linked_assumption);
+              return (
+                <div key={lever.id} style={{ background: C.cardAlt, borderRadius: 16, padding: "22px 24px", marginBottom: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                    <div><p style={{ fontSize: 14, fontWeight: 700 }}>{lever.name}</p>{asn && <p style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>Tests: {clean(asn.statement).substring(0, 60)}...</p>}</div>
+                    <div style={{ textAlign: "right" }}><p style={{ fontSize: 28, fontWeight: 700 }}>{val}{lever.unit === "%" ? "%" : lever.unit}</p><p style={{ fontSize: 11, color: C.muted }}>Default: {lever.default}{lever.unit === "%" ? "%" : lever.unit}</p></div>
+                  </div>
+                  <input type="range" min={lever.min} max={lever.max} value={val} onChange={e => setLeverValues({ ...leverValues, [lever.id]: Number(e.target.value) })} style={{ width: "100%", height: 6, borderRadius: 99, accentColor: C.grab }} />
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: C.muted, marginTop: 4 }}><span>{lever.min}{lever.unit === "%" ? "%" : lever.unit}</span><span>{lever.max}{lever.unit === "%" ? "%" : lever.unit}</span></div>
+                </div>
+              );
+            })}
+            <div style={{ borderRadius: 20, padding: "28px 32px", background: rec.color === "red" ? C.redBg : rec.color === "amber" ? C.amberBg : C.grabXLight, border: `2px solid ${rec.color === "red" ? C.redEdge : rec.color === "amber" ? C.amberEdge : C.grab}`, marginTop: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}><Zap style={{ width: 24, height: 24, color: rec.color === "red" ? C.redEdge : rec.color === "amber" ? C.amberEdge : C.grab }} /><p style={{ fontSize: 22, fontWeight: 700 }}>{rec.label}</p></div>
+              <p style={{ fontSize: 14, color: C.sub, lineHeight: 1.6 }}>{rec.msg}</p>
+            </div>
+            <NextStage current="simulator" setTab={setActiveTab} />
+          </div>
+        )}
+
+        {/* ═══ TEST PLAN ═══ */}
+        {activeTab === "communicator" && (
+          <div style={{ background: C.card, borderRadius: 20, border: `1px solid ${C.border}`, padding: "36px 40px" }}>
+            <HypContext h={h} />
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 6, display: "flex", alignItems: "center", gap: 10 }}><ClipboardCheck style={{ width: 22, height: 22, color: C.scout }} />Test plan</h3>
+            <p style={{ fontSize: 14, color: C.sub, marginBottom: 28 }}>A complete plan a growth manager could take to leadership.</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, borderRadius: 14, background: C.cardAlt, padding: "18px 22px", marginBottom: 24 }}>
+              {[{ l: "Date", v: fmt(h.generated_date) }, { l: "Prepared by", v: "Scout" }, { l: "For", v: "Head of Growth" }, { l: "Owner", v: clean(h.suggested_owner) }].map(f => <div key={f.l}><p style={{ fontSize: 10, color: C.muted, textTransform: "uppercase", marginBottom: 4 }}>{f.l}</p><p style={{ fontSize: 14, fontWeight: 600 }}>{f.v}</p></div>)}
+            </div>
+            <div style={{ marginBottom: 24 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", marginBottom: 12 }}>What to test</p>
+              {(h.test_plan?.what_to_test || []).map((item, i) => <div key={i} style={{ display: "flex", gap: 12, marginBottom: 8 }}><span style={{ width: 26, height: 26, borderRadius: 99, background: C.grabLight, color: C.grabDarker, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{i + 1}</span><p style={{ fontSize: 14, lineHeight: 1.5 }}>{clean(item)}</p></div>)}
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 24 }}>
+              <div style={{ borderRadius: 14, border: `1px solid ${C.border}`, padding: "18px 22px" }}><p style={{ fontSize: 11, fontWeight: 700, color: C.tealText, textTransform: "uppercase", marginBottom: 12 }}>Data Scout provides</p>{(h.test_plan?.data_scout_provides || []).map((d, i) => <p key={i} style={{ fontSize: 14, marginBottom: 6, display: "flex", gap: 8 }}><CheckCircle2 style={{ width: 16, height: 16, color: C.tealEdge, flexShrink: 0, marginTop: 2 }} />{clean(d)}</p>)}</div>
+              <div style={{ borderRadius: 14, border: `1px solid ${C.border}`, padding: "18px 22px" }}><p style={{ fontSize: 11, fontWeight: 700, color: C.amberText, textTransform: "uppercase", marginBottom: 12 }}>Team needs to gather</p>{(h.test_plan?.data_team_gathers || []).map((d, i) => <p key={i} style={{ fontSize: 14, marginBottom: 6, display: "flex", gap: 8 }}><AlertCircle style={{ width: 16, height: 16, color: C.amberEdge, flexShrink: 0, marginTop: 2 }} />{clean(d)}</p>)}</div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 24 }}>
+              <div style={{ borderRadius: 14, border: `2px solid ${C.tealEdge}`, background: C.tealBg, padding: "18px 22px" }}><p style={{ fontSize: 11, fontWeight: 700, color: C.tealText, textTransform: "uppercase", marginBottom: 10 }}>Success criteria</p>{(h.test_plan?.success_criteria || []).map((s, i) => <p key={i} style={{ fontSize: 14, marginBottom: 4 }}>- {clean(s)}</p>)}</div>
+              <div style={{ borderRadius: 14, border: `2px solid ${C.redEdge}`, background: C.redBg, padding: "18px 22px" }}><p style={{ fontSize: 11, fontWeight: 700, color: C.redText, textTransform: "uppercase", marginBottom: 10 }}>Kill criteria</p>{(h.kill_criteria || []).slice(0, 3).map((k, i) => <p key={i} style={{ fontSize: 14, marginBottom: 4 }}>- {clean(k)}</p>)}</div>
+            </div>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", marginBottom: 12 }}>Timeline</p>
+            {(h.test_plan?.timeline || []).map((t, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0", borderBottom: i < (h.test_plan?.timeline || []).length - 1 ? `1px solid ${C.border}` : "none" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: C.muted, width: 80, flexShrink: 0 }}>{t.weeks}</span>
+                <span style={{ fontSize: 14, flex: 1 }}>{clean(t.task)}</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.grabDarker, background: C.grabLight, padding: "4px 14px", borderRadius: 99 }}>{t.owner}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{ marginTop: 48, paddingTop: 24, borderTop: `1px solid ${C.border}`, textAlign: "center" }}>
+          <Link href="/" style={{ fontSize: 12, color: C.muted, textDecoration: "none" }}>Back to portfolio</Link>
         </div>
       </main>
     </div>
