@@ -9,6 +9,7 @@ const TABLES = {
   signals: "Signals_Raw",
   goals: "Grab_Strategic_Goals",
   drivers: "Grab_Financial_Drivers",
+competitors: "Competitor_Registry",
 };
 
 async function fetchTable(tableName: string) {
@@ -36,7 +37,7 @@ async function fetchTable(tableName: string) {
 
 export async function GET() {
   try {
-    const [hypRecords, betRecords, pilotRecords, runRecords, signalRecords, goalRecords, driverRecords] = await Promise.all([
+        const [hypRecords, betRecords, pilotRecords, runRecords, signalRecords, goalRecords, driverRecords, compRecords] = await Promise.all([
       fetchTable(TABLES.hypothesis),
       fetchTable(TABLES.bets),
       fetchTable(TABLES.pilots),
@@ -44,6 +45,7 @@ export async function GET() {
       fetchTable(TABLES.signals),
       fetchTable(TABLES.goals),
       fetchTable(TABLES.drivers),
+      fetchTable(TABLES.competitors),
     ]);
 
         const hypotheses = hypRecords.map((r: any) => ({
@@ -117,15 +119,38 @@ export async function GET() {
       created: r.createdTime,
     }));
 
+           const competitorNameById: Record<string, string> = {};
+    compRecords.forEach((r: any) => {
+      const name = r.fields.name || r.fields.Name || r.fields.competitor_name || r.fields.title || '';
+      if (name) competitorNameById[r.id] = name;
+    });
+
+   const resolveIds = (val: any): string => {
+      if (Array.isArray(val)) {
+        return val
+          .map((id: string) => competitorNameById[id] || 'Grab')
+          .sort()
+          .join(', ');
+      }
+      return typeof val === 'string' ? val : '';
+    };
+
     const signals = signalRecords.map((r: any) => ({
       id: r.id,
       title: r.fields.title || '',
       sector: r.fields.sector || '',
-      markets: r.fields.markets || '',
-      company: r.fields.company || '',
-      type: r.fields.type || '',
-      date: r.fields.date || r.createdTime,
-      summary: r.fields.summary || '',
+      type: r.fields.signal_type || '',
+      date: r.fields.date_detected || r.createdTime,
+      summary: r.fields.impact_summary || '',
+      source: r.fields.source || '',
+      url: r.fields.url || '',
+      company: resolveIds(r.fields.competitor_link),
+      markets: Array.isArray(r.fields.markets_affected)
+        ? r.fields.markets_affected.join(', ')
+        : (r.fields.markets_affected || ''),
+      drivers: Array.isArray(r.fields.drivers_affected)
+        ? r.fields.drivers_affected.join(', ')
+        : (r.fields.drivers_affected || ''),
     }));
 
     const goals = goalRecords.map((r: any) => ({

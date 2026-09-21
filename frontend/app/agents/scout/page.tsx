@@ -3248,9 +3248,9 @@ function GenerateSubTab({
     return Array.from(set).sort();
   }, [signals]);
 
-  const filteredSignals = useMemo(() => {
+const filteredSignals = useMemo(() => {
     let out = [...signals];
-
+    if (signals.length > 0) console.log('SIGNAL[0]:', signals[0]);
     if (filters.sector !== "all") {
       out = out.filter((s) => (s.sector || '').trim() === filters.sector);
     }
