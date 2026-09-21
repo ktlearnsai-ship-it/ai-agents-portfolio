@@ -491,21 +491,16 @@ export default function PortfolioHome() {
               </div>
             </div>
 
-            {/* Real live screenshot */}
-            <div className="rounded-2xl overflow-hidden bg-white shadow-2xl ring-1 ring-black/5 mb-10">
-              <div className="bg-gray-50 px-5 py-3 flex items-center gap-2 border-b border-gray-100">
-                <div className="flex gap-1.5">
-                  <span className="w-3 h-3 rounded-full bg-red-300" />
-                  <span className="w-3 h-3 rounded-full bg-amber-300" />
-                  <span className="w-3 h-3 rounded-full bg-green-300" />
-                </div>
-                <span className="text-xs text-gray-400 ml-2">krittika-takiar.vercel.app/agents/scout</span>
+            {/* Pipeline architecture */}
+            <div className="mb-10">
+              <p className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "#9E3D2A" }}>Under the hood</p>
+              <div className="rounded-2xl overflow-hidden bg-white shadow-2xl ring-1 ring-black/5">
+                <img
+                  src="/scout-landing.jpg"
+                  alt="Scout pipeline — four roles running in sequence, from inputs to hypothesis card"
+                  className="w-full h-auto block"
+                />
               </div>
-              <img
-                src="/scout-landing.jpg"
-                alt="Scout live product — Signals tab with Top 3 workset"
-                className="w-full h-auto block"
-              />
             </div>
 
             {/* Buttons */}
