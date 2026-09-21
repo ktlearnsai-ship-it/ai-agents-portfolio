@@ -391,12 +391,12 @@ export default function PortfolioHome() {
         <div className="space-y-8">
 
           {/* Scout */}
-          <div id="scout" className="rounded-3xl overflow-hidden p-8 md:p-14 relative scroll-mt-20" style={{ background: "linear-gradient(135deg, #ecfeff 0%, #f0f9ff 50%, #fff7ed 100%)" }}>
+          <div id="scout" className="rounded-3xl overflow-hidden p-8 md:p-14 relative scroll-mt-20" style={{ background: "linear-gradient(135deg, #FBF4F1 0%, #FEFCF9 50%, #F5EDDC 100%)" }}>
 
             {/* Header */}
             <div className="flex items-start justify-between mb-8 flex-wrap gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: "linear-gradient(135deg, #0ea5e9, #0284c7)" }}>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: "linear-gradient(135deg, #C0533B, #9E3D2A)" }}>
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.35-4.35"/>
@@ -419,7 +419,7 @@ export default function PortfolioHome() {
             {/* Headline */}
             <h3 className="text-5xl md:text-6xl font-bold text-gray-900 tracking-tight mb-6 leading-[1.02] max-w-3xl">
               Deep rigor.{" "}
-              <span style={{ background: "linear-gradient(135deg, #0ea5e9, #0284c7, #f97316)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              <span style={{ background: "linear-gradient(135deg, #C0533B, #B87A2E, #6B8E5A)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 Bolder bets.
               </span>
             </h3>
@@ -432,10 +432,10 @@ export default function PortfolioHome() {
             {/* Four roles */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
               {[
-                { num: "01", role: "Researcher", desc: "Gathers signals across markets and competitors.", grad: "#0ea5e9, #0284c7" },
-                { num: "02", role: "Interpreter", desc: "Sizes the prize in the company's own arithmetic.", grad: "#0284c7, #7c3aed" },
-                { num: "03", role: "Thought Partner", desc: "Frames the hypothesis and pressure-tests it.", grad: "#7c3aed, #f97316" },
-                { num: "04", role: "Communicator", desc: "Delivers a ranked bet portfolio ready to pilot.", grad: "#f97316, #ea580c" },
+                { num: "01", role: "Researcher", desc: "Gathers signals across markets and competitors.", grad: "#4A5A6B, #2F3A47" },
+                { num: "02", role: "Interpreter", desc: "Sizes the prize in the company's own arithmetic.", grad: "#6B8E5A, #4E6B41" },
+                { num: "03", role: "Thought Partner", desc: "Frames the hypothesis and pressure-tests it.", grad: "#B87A2E, #8F5C1F" },
+                { num: "04", role: "Communicator", desc: "Delivers a ranked bet portfolio ready to pilot.", grad: "#C0533B, #9E3D2A" },
               ].map((r) => (
                 <div key={r.num} className="bg-white/70 backdrop-blur rounded-2xl p-4 border border-white shadow-sm">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm mb-3" style={{ background: `linear-gradient(135deg, ${r.grad})` }}>
@@ -447,7 +447,40 @@ export default function PortfolioHome() {
               ))}
             </div>
 
-            {/* Screenshot */}
+            {/* 4-stage workflow strip */}
+            <div className="mb-6">
+              <p className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "#9E3D2A" }}>Four tabs, one workflow</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { n: "01", name: "Signals", sub: "Find what matters", color: "#6B8E5A", bg: "#EAF0E4",
+                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12h4l2-9 4 18 3-9 2 4h5"/></svg> },
+                  { n: "02", name: "Impact", sub: "Size the prize", color: "#B87A2E", bg: "#F5EDDC",
+                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg> },
+                  { n: "03", name: "Bets", sub: "Ranked plays", color: "#C0533B", bg: "#F7EBE6",
+                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg> },
+                  { n: "04", name: "Pilot", sub: "Test design", color: "#4A5A6B", bg: "#E8ECF0",
+                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91-.79-.79-2.07-.8-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg> },
+                ].map((s, i) => (
+                  <div key={s.n} className="relative bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: s.bg, color: s.color }}>
+                        {s.icon}
+                      </div>
+                      <span className="text-[10px] font-mono font-semibold tracking-wider" style={{ color: s.color }}>{s.n}</span>
+                    </div>
+                    <p className="text-base font-bold text-gray-900 leading-tight">{s.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{s.sub}</p>
+                    {i < 3 && (
+                      <div className="hidden md:block absolute top-1/2 -right-2 -translate-y-1/2 z-10" style={{ color: "#C0533B" }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Real live screenshot */}
             <div className="rounded-2xl overflow-hidden bg-white shadow-2xl ring-1 ring-black/5 mb-10">
               <div className="bg-gray-50 px-5 py-3 flex items-center gap-2 border-b border-gray-100">
                 <div className="flex gap-1.5">
@@ -457,34 +490,11 @@ export default function PortfolioHome() {
                 </div>
                 <span className="text-xs text-gray-400 ml-2">krittika-takiar.vercel.app/agents/scout</span>
               </div>
-              <div className="p-8 bg-white">
-                <div className="grid md:grid-cols-3 gap-6 mb-6">
-                  <div className="md:col-span-2">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-[11px] font-semibold px-2.5 py-1 rounded bg-blue-50 text-blue-600 border border-blue-100">Expand</span>
-                      <span className="text-xs text-gray-400">Urgency 9/10 · High confidence</span>
-                    </div>
-                    <p className="text-xl font-bold text-gray-900 leading-snug mb-2">
-                      &ldquo;Ant&apos;s AMP protocol commoditizes GrabPay. Grab should become the first wallet-agnostic superapp.&rdquo;
-                    </p>
-                    <p className="text-xs text-gray-400">Sep 12, 2026 · 14 signals · 8 markets · 31 competitors</p>
-                  </div>
-                  <div className="bg-sky-50 rounded-xl p-5 flex flex-col justify-center">
-                    <p className="text-3xl font-bold text-sky-700">$134M</p>
-                    <p className="text-xs text-sky-600 mt-1">quarterly revenue at inflection</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 flex-wrap mb-5">
-                  {["Thesis", "Counter-arguments", "Scenario model", "Options", "Next steps", "Signals"].map((tab, i) => (
-                    <span key={tab} className={`text-xs px-3 py-1.5 rounded-lg font-medium ${i === 0 ? "text-white shadow-sm" : "bg-gray-100 text-gray-600"}`} style={i === 0 ? { background: "linear-gradient(135deg, #0ea5e9, #0284c7)" } : {}}>{tab}</span>
-                  ))}
-                </div>
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    GrabPay is #2-3 in Malaysia, #3-4 in Philippines. Defending these positions costs capital that could fund lending in Indonesia, where Grab has a bank license and a $2.3B loan portfolio tripling year over year...
-                  </p>
-                </div>
-              </div>
+              <img
+                src="/scout-landing.jpg"
+                alt="Scout live product — Signals tab with Top 3 workset"
+                className="w-full h-auto block"
+              />
             </div>
 
             {/* Buttons */}
@@ -492,13 +502,13 @@ export default function PortfolioHome() {
               <Link
                 href="/agents/scout"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-white font-bold text-sm tracking-wider transition-all hover:opacity-90 shadow-md"
-                style={{ background: "linear-gradient(135deg, #0ea5e9, #0284c7)" }}
+                style={{ background: "linear-gradient(135deg, #C0533B, #9E3D2A)" }}
               >
                 TRY LIVE <ArrowUpRight className="w-4 h-4" />
               </Link>
 
               <a
-                href="/case-study.html"
+                href="/scout-guide.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border-2 border-gray-900 text-gray-900 font-bold text-sm tracking-wider hover:bg-gray-900 hover:text-white transition-colors cursor-pointer"
