@@ -426,53 +426,64 @@ export default function PortfolioHome() {
 
             {/* Positioning */}
             <p className="text-lg text-gray-600 leading-relaxed mb-10 max-w-3xl">
-              Growth teams spend days pulling competitor moves, mapping adjacencies, sizing opportunities, and stress-testing hypotheses. Scout does all of that overnight and hands you a ranked brief with best-case scenario models. Scout helps you convert data-driven insights to bold, strategic bets.
+              Scout reads the week's competitive signals, sizes the prize in your company's own arithmetic, and hands over a portfolio of bets ready to test. You still make the call.
             </p>
 
-            {/* Four roles */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-              {[
-                { num: "01", role: "Researcher", desc: "Gathers signals across markets and competitors.", grad: "#4A5A6B, #2F3A47" },
-                { num: "02", role: "Interpreter", desc: "Sizes the prize in the company's own arithmetic.", grad: "#6B8E5A, #4E6B41" },
-                { num: "03", role: "Thought Partner", desc: "Frames the hypothesis and pressure-tests it.", grad: "#B87A2E, #8F5C1F" },
-                { num: "04", role: "Communicator", desc: "Delivers a ranked bet portfolio ready to pilot.", grad: "#C0533B, #9E3D2A" },
-              ].map((r) => (
-                <div key={r.num} className="bg-white/70 backdrop-blur rounded-2xl p-4 border border-white shadow-sm">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm mb-3" style={{ background: `linear-gradient(135deg, ${r.grad})` }}>
-                    <span className="text-[10px] font-bold text-white">{r.num}</span>
-                  </div>
-                  <p className="text-sm font-bold text-gray-900 mb-1">{r.role}</p>
-                  <p className="text-xs text-gray-500 leading-snug">{r.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* 4-stage workflow strip */}
-            <div className="mb-6">
-              <p className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "#9E3D2A" }}>Four tabs, one workflow</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Merged flow — 4 tabs mapped to 4 roles */}
+            <div className="mb-8">
+              <p className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "#9E3D2A" }}>How Scout works</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative">
                 {[
-                  { n: "01", name: "Signals", sub: "Find what matters", color: "#6B8E5A", bg: "#EAF0E4",
-                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12h4l2-9 4 18 3-9 2 4h5"/></svg> },
-                  { n: "02", name: "Impact", sub: "Size the prize", color: "#B87A2E", bg: "#F5EDDC",
-                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg> },
-                  { n: "03", name: "Bets", sub: "Ranked plays", color: "#C0533B", bg: "#F7EBE6",
-                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg> },
-                  { n: "04", name: "Pilot", sub: "Test design", color: "#4A5A6B", bg: "#E8ECF0",
-                    icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91-.79-.79-2.07-.8-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg> },
+                  {
+                    n: "01",
+                    tab: "Signals",
+                    role: "Researcher",
+                    desc: "Scans the week's competitor moves and market data.",
+                    color: "#4A5A6B",
+                    bg: "#E8ECF0",
+                    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h4l2-9 4 18 3-9 2 4h5"/></svg>,
+                  },
+                  {
+                    n: "02",
+                    tab: "Impact",
+                    role: "Interpreter",
+                    desc: "Sizes the prize in your company's own arithmetic.",
+                    color: "#6B8E5A",
+                    bg: "#EAF0E4",
+                    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>,
+                  },
+                  {
+                    n: "03",
+                    tab: "Bets",
+                    role: "Thought Partner",
+                    desc: "Ranks the plays and pressure-tests each one.",
+                    color: "#B87A2E",
+                    bg: "#F5EDDC",
+                    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>,
+                  },
+                  {
+                    n: "04",
+                    tab: "Pilot",
+                    role: "Communicator",
+                    desc: "Designs the test with a real kill threshold.",
+                    color: "#C0533B",
+                    bg: "#F7EBE6",
+                    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91-.79-.79-2.07-.8-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/></svg>,
+                  },
                 ].map((s, i) => (
-                  <div key={s.n} className="relative bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: s.bg, color: s.color }}>
+                  <div key={s.n} className="relative bg-white rounded-2xl p-5 border border-white shadow-sm">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: s.bg, color: s.color }}>
                         {s.icon}
                       </div>
                       <span className="text-[10px] font-mono font-semibold tracking-wider" style={{ color: s.color }}>{s.n}</span>
                     </div>
-                    <p className="text-base font-bold text-gray-900 leading-tight">{s.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{s.sub}</p>
+                    <p className="text-lg font-bold text-gray-900 leading-none mb-1">{s.tab}</p>
+                    <p className="text-xs italic mb-3" style={{ color: s.color }}>{s.role}</p>
+                    <p className="text-sm text-gray-600 leading-snug">{s.desc}</p>
                     {i < 3 && (
-                      <div className="hidden md:block absolute top-1/2 -right-2 -translate-y-1/2 z-10" style={{ color: "#C0533B" }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div className="hidden lg:block absolute top-1/2 -right-3 -translate-y-1/2 z-10" style={{ color: "#C0533B" }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                       </div>
                     )}
                   </div>

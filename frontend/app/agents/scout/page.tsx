@@ -420,6 +420,31 @@ function ScoutHeader({ stats }: { stats?: { totalCost: number; runsCount: number
             </span>
           </div>
         )}
+        
+        <a
+          href="/scout-guide.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Read the Scout guide"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "6px 14px",
+            borderRadius: 99,
+            border: `1px solid ${c.border}`,
+            fontSize: 13,
+            color: c.text,
+            textDecoration: "none",
+            background: "transparent",
+          }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          <span style={{ fontWeight: 500 }}>Guide</span>
+        </a>
         <div
           style={{
             display: "flex",
