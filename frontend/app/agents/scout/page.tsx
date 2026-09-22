@@ -1572,7 +1572,16 @@ function ImpactAnchorNav() {
 function PrimaryGoalCard({ hyp }: { hyp: typeof MOCK_HYPOTHESIS }) {
   const [expanded, setExpanded] = useState(false);
    const goal = MOCK_GRAB_GOALS.find((g) => g.id === hyp.primary_goal_id) || MOCK_GRAB_GOALS[0];
-
+     const subtitleByGoal: Record<string, string> = {
+    finserv_ebitda: "Grab's commitment: reach FinServ breakeven in H2 2026",
+    deliveries_margin: "Grab's commitment: expand Deliveries EBITDA margin through FY26 via Priority mix and GrabAds",
+    group_revenue: "Grab's FY26 guidance: $4.10–4.15B revenue (22–23% growth)",
+    group_ebitda: "Grab's FY26 guidance: $720–740M Adj EBITDA (44–48% growth)",
+    ondemand_gmv: "Grab's commitment: sequential On-Demand GMV growth each quarter through 2026",
+    ecosystem_mtu: "Grab's commitment: sustained MTU growth YoY and QoQ",
+    ai_margin_lever: "Grab's trajectory: continued reduction in cost per interaction",
+  };  
+  
   return (
     <div
       id="primary"
@@ -1634,10 +1643,11 @@ function PrimaryGoalCard({ hyp }: { hyp: typeof MOCK_HYPOTHESIS }) {
           lineHeight: 1.2,
         }}
       >
-        {clean(goal.name)}
+                         {clean(goal.name)}
       </h2>
+
       <p style={{ fontSize: 13, color: c.sub, marginBottom: 24 }}>
-        Grab's commitment: reach breakeven in H2 2026
+        {subtitleByGoal[goal.id] || `Source: ${goal.source || "Grab disclosure"}`}
       </p>
 
       <div
@@ -1663,92 +1673,131 @@ function PrimaryGoalCard({ hyp }: { hyp: typeof MOCK_HYPOTHESIS }) {
         <MetricCard
           label="This hypothesis contributes"
           value={hyp.primary_contribution.value}
-          note={`${hyp.primary_contribution.percent_of_gap}% of the gap`}
+          note={(hyp.primary_contribution as any).contribution_note || `${hyp.primary_contribution.percent_of_gap}% of the gap`}
           valueColor={c.grabDark}
           highlight
         />
       </div>
 
-      <div style={{ marginBottom: 20 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            marginBottom: 8,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 11,
-              color: c.muted,
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-              fontWeight: 500,
-            }}
-          >
-            Gap-to-target contribution
-          </span>
-          <span style={{ fontSize: 12, color: c.sub }}>
-            {hyp.primary_contribution.gap_value} gap ·{" "}
-            {hyp.primary_contribution.value} closed ·{" "}
-            {hyp.primary_contribution.remaining_value} remaining
-          </span>
-        </div>
-        <div
-          style={{
-            position: "relative",
-            height: 40,
-            background: c.alt,
-            borderRadius: 10,
-            overflow: "hidden",
-          }}
-        >
+                  {hyp.primary_contribution.percent_of_gap > 0 ? (
+        // ============================================================
+        // GAP-BAR MODE: goal has a numeric dollar gap (H2, H3 → FinServ)
+        // ============================================================
+        <div style={{ marginBottom: 20 }}>
           <div
             style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              height: "100%",
-              width: `${hyp.primary_contribution.percent_of_gap}%`,
-              background: c.grab,
-              borderRadius: "10px 0 0 10px",
               display: "flex",
-              alignItems: "center",
-              paddingLeft: 14,
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              marginBottom: 8,
             }}
           >
-            <span style={{ fontSize: 12, fontWeight: 500, color: "white" }}>
-              {hyp.primary_contribution.value}
+            <span
+              style={{
+                fontSize: 11,
+                color: c.muted,
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                fontWeight: 500,
+              }}
+            >
+              Gap-to-target contribution
             </span>
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              right: 14,
-              top: 0,
-              bottom: 0,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <span style={{ fontSize: 12, color: c.sub, fontWeight: 500 }}>
+            <span style={{ fontSize: 12, color: c.sub }}>
+              {hyp.primary_contribution.gap_value} gap ·{" "}
+              {hyp.primary_contribution.value} closed ·{" "}
               {hyp.primary_contribution.remaining_value} remaining
             </span>
           </div>
+          <div
+            style={{
+              position: "relative",
+              height: 40,
+              background: c.alt,
+              borderRadius: 10,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                height: "100%",
+                width: `${hyp.primary_contribution.percent_of_gap}%`,
+                background: c.grab,
+                borderRadius: "10px 0 0 10px",
+                display: "flex",
+                alignItems: "center",
+                paddingLeft: 14,
+              }}
+            >
+              <span style={{ fontSize: 12, fontWeight: 500, color: "white" }}>
+                {hyp.primary_contribution.value}
+              </span>
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                right: 14,
+                top: 0,
+                bottom: 0,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontSize: 12, color: c.sub, fontWeight: 500 }}>
+                {hyp.primary_contribution.remaining_value} remaining
+              </span>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+            <span style={{ fontSize: 11, color: c.muted }}>
+              {hyp.primary_contribution.baseline_display} baseline
+            </span>
+            <span style={{ fontSize: 11, color: c.text, fontWeight: 500 }}>
+              {hyp.primary_contribution.percent_of_gap}% closed
+            </span>
+            <span style={{ fontSize: 11, color: c.muted }}>
+              {hyp.primary_contribution.target_display} target
+            </span>
+          </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
-          <span style={{ fontSize: 11, color: c.muted }}>
-            {hyp.primary_contribution.baseline_display} baseline
-          </span>
-          <span style={{ fontSize: 11, color: c.text, fontWeight: 500 }}>
-            {hyp.primary_contribution.percent_of_gap}% closed
-          </span>
-          <span style={{ fontSize: 11, color: c.muted }}>
-            {hyp.primary_contribution.target_display} target
-          </span>
+      ) : (
+        // ============================================================
+        // INSIGHT CALLOUT: goal has no dollar gap (H1 → Deliveries margin)
+        // ============================================================
+        <div
+          style={{
+            marginBottom: 20,
+            padding: "16px 20px",
+            background: c.grabXLight,
+            border: `1px solid ${c.grabLight}`,
+            borderRadius: 12,
+          }}
+        >
+          <p
+            style={{
+              fontSize: 10,
+              color: c.grabDark,
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              fontWeight: 500,
+              marginBottom: 8,
+            }}
+          >
+            What this means
+          </p>
+          <p style={{ fontSize: 13, color: c.text, lineHeight: 1.6 }}>
+            <span style={{ fontWeight: 500 }}>{hyp.primary_contribution.value}/yr</span>
+            {' = '}
+            <span style={{ fontWeight: 500 }}>
+              {(hyp.primary_contribution as any).contribution_note || 'direct contribution'}
+            </span>
+            {' expansion. For context, Grab delivered ~30bps of Deliveries margin expansion in the last four quarters — this hypothesis alone contributes roughly 2x that pace.'}
+          </p>
         </div>
-      </div>
+      )}
 
       <button
         onClick={() => setExpanded(!expanded)}
@@ -1771,10 +1820,10 @@ function PrimaryGoalCard({ hyp }: { hyp: typeof MOCK_HYPOTHESIS }) {
         🧮 How Scout arrived at {hyp.primary_contribution.value} {expanded ? "▴" : "▾"}
       </button>
 
-      {expanded && <ArithmeticExpansion hyp={hyp} />}
+            {expanded && <ArithmeticExpansion hyp={hyp} />}
     </div>
   );
-}
+  }
 
 function MetricCard({
   label,
@@ -3139,15 +3188,17 @@ export const initialGenerateState: GenerateState = {
 
 function parseHypothesisFromStep4(text: string) {
   const shortMatch = text.match(/SHORT_NAME:\s*(.+?)(?:\n|$)/);
-  const thesisMatch = text.match(/THESIS:\s*([\s\S]+?)(?=\n(?:PRIMARY_GOAL|LOAD_BEARING_DRIVERS):|$)/);
+  const thesisMatch = text.match(/THESIS:\s*([\s\S]+?)(?=\n(?:PRIMARY_GOAL|LOAD_BEARING_DRIVERS|LOAD_BEARING_PRODUCTS):|$)/);
   const goalMatch = text.match(/PRIMARY_GOAL:\s*(.+?)(?:\n|$)/);
   const driversMatch = text.match(/LOAD_BEARING_DRIVERS:\s*(.+?)(?:\n|$)/);
+  const productsMatch = text.match(/LOAD_BEARING_PRODUCTS:\s*(.+?)(?:\n|$)/);
 
   return {
     short_name: shortMatch?.[1]?.trim() || '',
     thesis: thesisMatch?.[1]?.trim() || '',
     primary_goal_id: goalMatch?.[1]?.trim() || '',
     load_bearing_driver_ids: (driversMatch?.[1]?.trim() || '').split(',').map((s: string) => s.trim()).filter(Boolean),
+    load_bearing_product_ids: (productsMatch?.[1]?.trim() || '').split(',').map((s: string) => s.trim()).filter(Boolean),
   };
 }
 
@@ -3980,6 +4031,7 @@ function HypothesisDraftCard({
   onGoToImpact: () => void;
 }) {
   const [driversExpanded, setDriversExpanded] = useState(false);
+  const [productsExpanded, setProductsExpanded] = useState(false);
   const [busy, setBusy] = useState<null | "top3" | "saved">(null);
   const [savedDone, setSavedDone] = useState(false);
   const [top3Done, setTop3Done] = useState(false);
@@ -3988,10 +4040,31 @@ function HypothesisDraftCard({
   const goalIdRaw = (hypothesis.primary_goal_id || '').trim();
   const goalIdLower = goalIdRaw.toLowerCase();
   const goal =
-    goals.find((g) => (g.goal_id || '').trim().toLowerCase() === goalIdLower) ||
-    goals.find((g) => (g.goal_id || '').trim().toLowerCase().includes(goalIdLower)) ||
-    goals.find((g) => goalIdLower.includes((g.goal_id || '').trim().toLowerCase()));
-  const goalName = goal?.goal_name || goalIdRaw || "—";
+  goals.find((g) => (g.goal_id || '').trim().toLowerCase() === goalIdLower) ||
+  goals.find((g) => (g.goal_id || '').trim().toLowerCase().includes(goalIdLower)) ||
+  goals.find((g) => goalIdLower.includes((g.goal_id || '').trim().toLowerCase()));
+
+// Humanize the raw goal_id as fallback if lookup fails
+const humanizeGoalId = (id: string) => {
+  if (!id) return "—";
+  const map: Record<string, string> = {
+    FS_EBITDA_H2_26: "FinServ H2 2026 EBITDA breakeven",
+    FS_GLP_EOY_26: "FinServ GLP by end of 2026",
+    OD_GMV_H2_26: "On-Demand GMV growth H2 2026",
+    GRP_REV_FY26: "FY26 Group Revenue",
+    GRP_EBITDA_FY26: "FY26 Group Adj EBITDA",
+    DEL_MARGIN_FY26: "Deliveries margin FY26",
+    MTU_MOMENTUM: "Ecosystem MTU momentum",
+  };
+  return map[id.toUpperCase()] || clean(id);
+};
+
+const goalName = goal?.goal_name || goal?.name || humanizeGoalId(goalIdRaw);
+
+// Debug — remove after verifying
+if (typeof window !== 'undefined') {
+  console.log('[Goal lookup]', { goalIdRaw, goalsCount: goals.length, sampleGoal: goals[0], resolvedGoal: goal });
+}
 
   const driverDetails = (hypothesis.load_bearing_driver_ids || [])
     .map((did: string) => {
@@ -4017,18 +4090,22 @@ function HypothesisDraftCard({
       const signalsUsed = selSignals.map((s: any) => s.title).join(' | ');
 
       const hypToSave = {
-        ...hypothesis,
-        framer_stage_1: stage1,
-        framer_stage_2: stage2,
-        framer_stage_3: stage3,
-        framer_stage_4_rationale: stage4,
-        framing_type: selectedFraming?.type,
-        framing_rationale: selectedFraming?.rationale,
-        signals_used: signalsUsed,
-        competitor: competitors,
-        markets: markets,
-        sector: sectors,
-      };
+  ...hypothesis,
+  framer_stage_1: stage1,
+  framer_stage_2: stage2,
+  framer_stage_3: stage3,
+  framer_stage_4_rationale: stage4,
+  framing_type: selectedFraming?.type,
+  framing_rationale: selectedFraming?.rationale,
+  signals_used: signalsUsed,
+  competitor: competitors,
+  markets: markets,
+  sector: sectors,
+  // NEW — persist goal + drivers
+  primary_goal_id: hypothesis.primary_goal_id,
+  load_bearing_drivers: (hypothesis.load_bearing_driver_ids || []).join(', '),
+  load_bearing_products: (hypothesis.load_bearing_product_ids || []).join(', '),
+};
       await onPersist(hypToSave, action);
       if (action === "top3") setTop3Done(true);
       if (action === "saved") setSavedDone(true);
@@ -4079,6 +4156,14 @@ function HypothesisDraftCard({
         >
           {driverDetails.length} load-bearing driver{driverDetails.length !== 1 ? 's' : ''} {driversExpanded ? '▴' : '▾'}
         </button>
+        {(hypothesis.load_bearing_product_ids?.length > 0) && (
+  <button
+    onClick={() => setProductsExpanded(!productsExpanded)}
+    style={{ fontSize: 11, padding: "4px 10px", background: c.scoutLight, color: c.scoutDark, borderRadius: 6, fontWeight: 500, border: "none", cursor: "pointer" }}
+  >
+    {hypothesis.load_bearing_product_ids.length} Grab product{hypothesis.load_bearing_product_ids.length !== 1 ? 's' : ''} {productsExpanded ? '▴' : '▾'}
+  </button>
+)}
       </div>
 
       {driversExpanded && driverDetails.length > 0 && (
@@ -4100,6 +4185,26 @@ function HypothesisDraftCard({
           </div>
         </div>
       )}
+      {productsExpanded && hypothesis.load_bearing_product_ids?.length > 0 && (
+  <div style={{ marginBottom: 14, padding: "12px 14px", background: c.scoutXLight, borderRadius: 8, border: `1px solid ${c.scoutLight}` }}>
+    <p style={{ fontSize: 10, color: c.scoutDark, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 500 }}>
+      Grab products doing the work
+    </p>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {hypothesis.load_bearing_product_ids.map((pid: string) => (
+        <div key={pid} style={{ padding: "8px 10px", background: "white", borderRadius: 6, border: `1px solid ${c.border}` }}>
+          <p style={{ fontSize: 12, fontWeight: 500, color: c.text }}>
+            {pid}
+          </p>
+        </div>
+      ))}
+    </div>
+    <p style={{ fontSize: 10, color: c.muted, marginTop: 8, fontStyle: "italic" }}>
+      Full product names + roles surface in the Impact tab when you promote to Active.
+    </p>
+  </div>
+)}
+
 
       {(top3Done || savedDone) && (
         <div style={{ marginBottom: 12, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -4449,7 +4554,7 @@ function SavedCard({
             cursor: "pointer",
           }}
         >
-          Inspect
+          Explore
         </button>
         <button
           onClick={handleUnsave}
@@ -4491,6 +4596,8 @@ function SavedCard({
   );
 }
 
+
+
 function Top3Workset({
   top3,
   onGoToGenerate,
@@ -4508,36 +4615,59 @@ function Top3Workset({
     <div
       style={{
         background: c.card,
-        border: `2px solid ${c.grab}`,
-        borderRadius: 14,
-        padding: "16px 18px",
+        borderRadius: 16,
+        padding: "22px 24px",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08)",
+        border: `1px solid ${c.border}`,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+      {/* Header with clear hierarchy */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 18 }}>
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-            <span style={{ color: c.grab, fontSize: 16 }}>🏆</span>
-            <span
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+            <div
               style={{
-                fontSize: 10,
-                color: c.grabDark,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                fontWeight: 500,
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                background: `linear-gradient(135deg, ${c.grab}, ${c.grabDark})`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 16,
+                boxShadow: `0 2px 8px ${c.grab}40`,
               }}
             >
-              YOUR TOP 3 WORKSET
-            </span>
+              🏆
+            </div>
+            <h2
+              style={{
+                fontSize: 17,
+                fontWeight: 600,
+                color: c.text,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Your Top 3 workset
+            </h2>
           </div>
-          <p style={{ fontSize: 12, color: c.sub }}>
-            The hypotheses you're actively investigating. Click any card to inspect. Impact, Bets, and Pilot tabs run on your Top 3.
+          <p style={{ fontSize: 12.5, color: c.sub, lineHeight: 1.5, marginLeft: 42 }}>
+            The hypotheses you're actively investigating. Impact, Bets, and Pilot tabs run on your Active hypothesis.
           </p>
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-                {top3.map((h, i) => (
-          <Top3Slot key={i} slot={i + 1} hyp={h} onGoToGenerate={onGoToGenerate} onOpenSlot={onOpenSlot} onRemove={onRemove} onSetActive={onSetActive} />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+        {top3.map((h, i) => (
+          <Top3Slot
+            key={i}
+            slot={i + 1}
+            hyp={h}
+            onGoToGenerate={onGoToGenerate}
+            onOpenSlot={onOpenSlot}
+            onRemove={onRemove}
+            onSetActive={onSetActive}
+          />
         ))}
       </div>
     </div>
@@ -4564,66 +4694,146 @@ function Top3Slot({
       <button
         onClick={onGoToGenerate}
         style={{
-          padding: "18px 14px",
+          padding: "20px 14px",
           background: c.alt,
-          border: `1px dashed ${c.border}`,
+          border: `1.5px dashed ${c.border}`,
           borderRadius: 12,
           textAlign: "center",
           cursor: "pointer",
-          minHeight: 100,
+          minHeight: 220,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 4,
+          gap: 6,
+          transition: "all 0.15s",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = c.scout;
+          e.currentTarget.style.background = c.scoutXLight;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = c.border;
+          e.currentTarget.style.background = c.alt;
         }}
       >
-        <span style={{ fontSize: 18, color: c.muted }}>+</span>
-        <span style={{ fontSize: 10, color: c.muted, fontWeight: 500 }}>
+        <span style={{ fontSize: 22, color: c.muted }}>+</span>
+        <span style={{ fontSize: 11, color: c.muted, fontWeight: 500 }}>
           Slot {slot} — add a hypothesis
         </span>
       </button>
     );
   }
+
   const isActive = hyp.is_active;
+  const framingType = (hyp.framing_type || '').toLowerCase();
+  const framingColor =
+    framingType === "defensive" ? c.red :
+    framingType === "offensive" ? c.teal :
+    framingType === "convergence" ? c.amber : c.muted;
+  const framingBg =
+    framingType === "defensive" ? c.redBg :
+    framingType === "offensive" ? c.tealBg :
+    framingType === "convergence" ? c.amberBg : c.alt;
+  const framingText =
+    framingType === "defensive" ? c.redText :
+    framingType === "offensive" ? c.tealText :
+    framingType === "convergence" ? c.amberText : c.sub;
+
+  // Thesis snippet (same pattern as Scouted cards)
+  const thesisSnippet = (hyp.thesis || '').trim();
+  const displayThesis = thesisSnippet.length > 160
+    ? thesisSnippet.slice(0, 157) + '…'
+    : thesisSnippet;
+
   return (
     <div
       style={{
         position: "relative",
-        padding: "12px 14px",
-        background: isActive ? c.grabLight : c.grabXLight,
-        border: isActive ? `2px solid ${c.grabDark}` : `1px solid ${c.grab}`,
+        padding: "14px 16px",
+        background: isActive ? c.grabXLight : "white",
+        boxShadow: isActive
+          ? `0 0 0 2px ${c.grab}, 0 6px 16px ${c.grab}25, 0 1px 3px rgba(0,0,0,0.05)`
+          : `0 1px 2px rgba(0,0,0,0.04), 0 4px 12px -6px rgba(0,0,0,0.08)`,
+        border: isActive ? "none" : `1px solid ${c.border}`,
         borderRadius: 12,
-        minHeight: 100,
+        minHeight: 220,
         display: "flex",
         flexDirection: "column",
+        gap: 10,
       }}
     >
-      {/* Top-right corner actions */}
-      <div style={{ position: "absolute", top: 6, right: 6, display: "flex", gap: 4, zIndex: 2 }}>
-        {!isActive && (
+      {/* Top row: Active/Set Active pill + slot + remove */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {isActive ? (
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "3px 9px",
+              background: c.grab,
+              color: "white",
+              borderRadius: 5,
+              fontSize: 9,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              boxShadow: `0 2px 6px ${c.grab}40`,
+            }}
+          >
+            <span
+              style={{
+                width: 5,
+                height: 5,
+                borderRadius: "50%",
+                background: "white",
+                animation: "pulse 1.6s ease-in-out infinite",
+              }}
+            />
+            Active
+          </div>
+        ) : (
           <button
             onClick={(e) => {
               e.stopPropagation();
               onSetActive(hyp.id);
             }}
-            title="Set as Active — flows into Impact, Bets, Pilot"
+            title="Make this hypothesis Active — Impact, Bets, Pilot will use it"
             style={{
-              padding: "3px 8px",
-              borderRadius: 4,
+              padding: "3px 9px",
               background: "white",
               border: `1px solid ${c.grab}`,
               color: c.grabDark,
+              borderRadius: 5,
               fontSize: 9,
-              fontWeight: 500,
+              fontWeight: 700,
               cursor: "pointer",
               textTransform: "uppercase",
-              letterSpacing: "0.04em",
+              letterSpacing: "0.06em",
+              transition: "all 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = c.grab;
+              e.currentTarget.style.color = "white";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "white";
+              e.currentTarget.style.color = c.grabDark;
             }}
           >
             Set Active
           </button>
         )}
+        <span
+          style={{
+            fontSize: 10,
+            color: c.muted,
+            fontWeight: 500,
+          }}
+        >
+          #{slot}
+        </span>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -4633,71 +4843,149 @@ function Top3Slot({
           }}
           title="Remove from Top 3"
           style={{
+            marginLeft: "auto",
             width: 20,
             height: 20,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.9)",
-            border: `1px solid ${c.border}`,
+            borderRadius: 5,
+            background: "transparent",
+            border: "none",
             color: c.muted,
-            fontSize: 12,
-            fontWeight: 500,
+            fontSize: 14,
+            fontWeight: 400,
             cursor: "pointer",
+            padding: 0,
+            lineHeight: 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: 0,
-            lineHeight: 1,
+            transition: "background 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = c.alt;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
           }}
         >
           ×
         </button>
       </div>
 
-      <button
-        onClick={() => onOpenSlot(hyp)}
+      {/* Category tags row: sector + framing */}
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+        {hyp.sector ? (
+          <span
+            style={{
+              fontSize: 9,
+              padding: "2px 7px",
+              borderRadius: 4,
+              background: c.grabLight,
+              color: c.grabDark,
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.04em",
+            }}
+          >
+            {hyp.sector}
+          </span>
+        ) : (
+          <span
+            style={{
+              fontSize: 9,
+              padding: "2px 7px",
+              borderRadius: 4,
+              background: c.alt,
+              color: c.muted,
+              fontWeight: 500,
+              textTransform: "uppercase",
+              letterSpacing: "0.04em",
+              fontStyle: "italic",
+            }}
+          >
+            Sector TBD
+          </span>
+        )}
+        {hyp.framing_type && (
+          <span
+            style={{
+              fontSize: 9,
+              padding: "2px 7px",
+              borderRadius: 4,
+              background: framingBg,
+              color: framingText,
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.04em",
+            }}
+          >
+            {hyp.framing_type}
+          </span>
+        )}
+      </div>
+
+      {/* Title */}
+      <h3
         style={{
-          background: "transparent",
-          border: "none",
-          padding: 0,
-          cursor: "pointer",
-          textAlign: "left",
-          fontFamily: "inherit",
-          display: "flex",
-          flexDirection: "column",
+          fontSize: 14,
+          fontWeight: 600,
+          color: c.text,
+          lineHeight: 1.3,
+          letterSpacing: "-0.005em",
+        }}
+      >
+        {hyp.short_name}
+      </h3>
+
+      {/* Thesis snippet */}
+      <p
+        style={{
+          fontSize: 11.5,
+          color: c.sub,
+          lineHeight: 1.55,
+          display: "-webkit-box",
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+          fontStyle: displayThesis ? "normal" : "italic",
           flex: 1,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, paddingRight: isActive ? 30 : 90 }}>
-          <span
-            style={{
-              width: 18,
-              height: 18,
-              borderRadius: "50%",
-              background: isActive ? c.grabDark : c.grab,
-              color: "white",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 10,
-              fontWeight: 500,
-            }}
-          >
-            {slot}
-          </span>
-          {isActive && (
-            <span style={{ fontSize: 9, padding: "2px 6px", background: c.grabDark, color: "white", borderRadius: 3, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-              ✓ Active
-            </span>
-          )}
-          {hyp.sector && !isActive && (
-            <span style={{ fontSize: 9, color: c.grabDark, fontWeight: 500 }}>
-              {hyp.sector}
-            </span>
-          )}
-        </div>
-        <p style={{ fontSize: 12, fontWeight: 500, color: c.text, lineHeight: 1.35 }}>
-          {hyp.short_name}
-        </p>
+        {displayThesis || 'Thesis not yet drafted.'}
+      </p>
+
+      {/* Bottom: single Explore button */}
+        <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpenSlot(hyp);
+        }}
+        title="Open full hypothesis detail"
+        style={{
+          padding: "9px 12px",
+          background: isActive ? "white" : "transparent",
+          border: `1px solid ${isActive ? c.grab : c.border}`,
+          color: isActive ? c.grabDark : c.sub,
+          borderRadius: 6,
+          fontSize: 11,
+          fontWeight: 600,
+          cursor: "pointer",
+          textTransform: "uppercase",
+          letterSpacing: "0.04em",
+          transition: "all 0.15s",
+          marginTop: "auto",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = c.scout;
+          e.currentTarget.style.color = c.scoutDark;
+          e.currentTarget.style.background = c.scoutXLight;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = isActive ? c.grab : c.border;
+          e.currentTarget.style.color = isActive ? c.grabDark : c.sub;
+          e.currentTarget.style.background = isActive ? "white" : "transparent";
+        }}
+      >
+        Explore →
       </button>
     </div>
   );
@@ -4891,22 +5179,24 @@ function ScoutedCard({
 
       {/* Actions */}
       <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-        <button
-          onClick={onInspect}
-          style={{
-            flex: 1,
-            padding: "8px",
-            background: "transparent",
-            border: `1px solid ${c.border}`,
-            borderRadius: 6,
-            color: c.sub,
-            fontSize: 11,
-            fontWeight: 500,
-            cursor: "pointer",
-          }}
-        >
-          Inspect
-        </button>
+                {(hyp.framer_stage_1 || hyp.framer_stage_2 || hyp.framer_stage_3 || hyp.framer_stage_4_rationale) && (
+          <button
+            onClick={onInspect}
+            style={{
+              flex: 1,
+              padding: "8px",
+              background: "transparent",
+              border: `1px solid ${c.border}`,
+              borderRadius: 6,
+              color: c.sub,
+              fontSize: 11,
+              fontWeight: 500,
+              cursor: "pointer",
+            }}
+          >
+            Explore
+          </button>
+        )}
         <button
           onClick={handleSave}
           disabled={savedDone || busy !== null || hyp.is_saved}
@@ -4951,6 +5241,7 @@ function ScoutedDetailDrawer({
   hyp,
   goals,
   drivers,
+  signals,
   onClose,
   onAddToTop3,
   onSetActiveFromDrawer,
@@ -4958,6 +5249,7 @@ function ScoutedDetailDrawer({
   hyp: any | null;
   goals: any[];
   drivers: any[];
+  signals: any[];
   onClose: () => void;
   onAddToTop3: () => void;
   onSetActiveFromDrawer?: (hypId: string) => void;
@@ -4998,10 +5290,17 @@ function ScoutedDetailDrawer({
     framingType === "offensive" ? c.tealText :
     framingType === "convergence" ? c.amberText : c.sub;
 
-  const signalsUsedList = (hyp.signals_used || '')
-    .split(',')
-    .map((s: string) => s.trim())
-    .filter(Boolean);
+  // Signals were joined with " | " when saving — split on that, not comma
+const signalsUsedList = (hyp.signals_used || '')
+  .split(/\s*\|\s*/)
+  .map((s: string) => s.trim())
+  .filter(Boolean);
+
+// Look up each signal by title to get its URL for clickable links
+const signalsUsedWithUrls = signalsUsedList.map((title: string) => {
+  const match = signals?.find((s: any) => (s.title || '').trim() === title);
+  return { title, url: match?.url || null, date: match?.date || null, source: match?.source || null };
+});
 
     const placeholder = "[Not yet documented]";
 
@@ -5081,6 +5380,58 @@ function ScoutedDetailDrawer({
 
         {/* Body */}
         <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
+                            {/* NEW: Signals used - clickable cards */}
+          {signalsUsedWithUrls.length > 0 && (
+  <div>
+    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+      <span style={{ fontSize: 10, color: c.muted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 500 }}>
+        Signals used ({signalsUsedWithUrls.length})
+      </span>
+    </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {signalsUsedWithUrls.map((s: any, i: number) => {
+        const hasUrl = Boolean(s.url);
+        const Tag: any = hasUrl ? "a" : "div";
+        const linkProps = hasUrl
+          ? { href: s.url, target: "_blank", rel: "noopener noreferrer" }
+          : {};
+        return (
+          <Tag
+            key={i}
+            {...linkProps}
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 8,
+              padding: "10px 12px",
+              background: hasUrl ? c.card : c.alt,
+              border: hasUrl ? `1px solid ${c.border}` : "none",
+              borderRadius: 8,
+              textDecoration: "none",
+              color: c.text,
+            }}
+          >
+            <span style={{ fontSize: 12, color: hasUrl ? c.scout : c.muted, flexShrink: 0, marginTop: 2 }}>
+              {hasUrl ? "↗" : "📎"}
+            </span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 12, color: c.text, lineHeight: 1.4, fontWeight: 500, marginBottom: 3 }}>
+                {s.title}
+              </p>
+              {hasUrl && (
+                <p style={{ fontSize: 10, color: c.muted }}>
+                  {s.source}
+                  {s.date ? ` · ${s.date}` : ""}
+                </p>
+              )}
+            </div>
+          </Tag>
+        );
+      })}
+    </div>
+  </div>
+)}
+        
           {/* Thesis */}
           <div>
             <p style={{ fontSize: 10, color: c.muted, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 500, marginBottom: 6 }}>
@@ -5112,7 +5463,6 @@ function ScoutedDetailDrawer({
                 label="The pattern"
                 content={hyp.framer_stage_1}
                 placeholder={placeholder}
-                signalsUsed={signalsUsedList}
               />
                 <FramerStageBlock
                 num={2}
@@ -5121,11 +5471,12 @@ function ScoutedDetailDrawer({
                 placeholder={placeholder}
               />
                 <FramerStageBlock
-                num={3}
-                label="Strategic options"
-                content={hyp.framer_stage_3}
-                placeholder={placeholder}
-              />
+  num={3}
+  label="Strategic options"
+  content={hyp.framer_stage_3}
+  placeholder={placeholder}
+  pickedFramingType={hyp.framing_type}
+/>
                 <FramerStageBlock
                 num={4}
                 label="Why this framing"
@@ -5219,27 +5570,48 @@ function FramerStageBlock({
   label,
   content,
   placeholder,
-  signalsUsed,
+  pickedFramingType,
   highlight,
 }: {
   num: number;
   label: string;
   content: string;
   placeholder: string;
-  signalsUsed?: string[];
+  pickedFramingType?: string;
   highlight?: boolean;
 }) {
   const isEmpty = !content || !content.trim();
+
+  // Stage 3 special case: parse JSON framings and render as cards
+  const isStage3 = num === 3;
+  let framings: any[] | null = null;
+  if (isStage3 && !isEmpty) {
+    try {
+      const cleaned = content.replace(/```json\s*/i, '').replace(/```\s*$/i, '').trim();
+      const parsed = JSON.parse(cleaned);
+      if (parsed.framings && Array.isArray(parsed.framings)) {
+        framings = parsed.framings;
+      }
+    } catch {
+      // fall through to plain text render
+    }
+  }
+
+  // Split prose into paragraphs (double newline OR single if long paragraph)
+  const paragraphs = !isEmpty && !framings
+    ? content.split(/\n\n+/).map(p => p.trim()).filter(Boolean)
+    : [];
+
   return (
     <div
       style={{
-        padding: "10px 12px",
+        padding: "12px 14px",
         background: highlight ? c.scoutXLight : c.alt,
         border: `1px solid ${highlight ? c.scout : c.border}`,
         borderRadius: 8,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
         <span
           style={{
             width: 18,
@@ -5258,35 +5630,86 @@ function FramerStageBlock({
         </span>
         <span style={{ fontSize: 11, fontWeight: 500, color: c.text }}>{label}</span>
       </div>
-      <p
-        style={{
-          fontSize: 12,
-          color: isEmpty ? c.muted : c.text,
-          lineHeight: 1.65,
-          whiteSpace: "pre-wrap",
-          fontStyle: isEmpty ? "italic" : "normal",
-          paddingLeft: 24,
-        }}
-      >
-        {isEmpty ? placeholder : content}
-      </p>
-      {signalsUsed && signalsUsed.length > 0 && !isEmpty && (
-        <div style={{ marginTop: 8, paddingLeft: 24, display: "flex", gap: 4, flexWrap: "wrap" }}>
-          {signalsUsed.map((s, i) => (
-            <span
-              key={i}
-              style={{
-                fontSize: 9,
-                padding: "2px 6px",
-                background: "white",
-                border: `1px solid ${c.border}`,
-                borderRadius: 3,
-                color: c.sub,
-              }}
-            >
-              📎 {s}
-            </span>
-          ))}
+
+      {/* Empty state */}
+      {isEmpty && (
+        <p style={{ fontSize: 12, color: c.muted, lineHeight: 1.6, fontStyle: "italic", paddingLeft: 24 }}>
+          {placeholder}
+        </p>
+      )}
+
+      {/* Stage 3: render framings as 3 cards */}
+      {framings && (
+        <div style={{ paddingLeft: 24, display: "flex", flexDirection: "column", gap: 8 }}>
+          {framings.map((f, i) => {
+            const t = (f.type || '').toLowerCase();
+            const isPicked = pickedFramingType && t === (pickedFramingType || '').toLowerCase();
+            const borderColor = t === "defensive" ? c.red : t === "offensive" ? c.teal : c.amber;
+            const bg = t === "defensive" ? c.redBg : t === "offensive" ? c.tealBg : c.amberBg;
+            const txt = t === "defensive" ? c.redText : t === "offensive" ? c.tealText : c.amberText;
+            return (
+              <div
+                key={i}
+                style={{
+                  padding: "10px 12px",
+                  background: "white",
+                  borderTop: `1px solid ${c.border}`,
+                  borderRight: `1px solid ${c.border}`,
+                  borderBottom: `1px solid ${c.border}`,
+                  borderLeft: `4px solid ${borderColor}`,
+                  borderRadius: 8,
+                  position: "relative",
+                  outline: isPicked ? `2px solid ${c.grab}` : "none",
+                  outlineOffset: isPicked ? -2 : 0,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                  <span style={{ fontSize: 9, padding: "2px 6px", background: bg, color: txt, borderRadius: 4, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                    {f.type}
+                  </span>
+                  {isPicked && (
+                    <span style={{ fontSize: 9, padding: "2px 6px", background: c.grab, color: "white", borderRadius: 4, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      ✓ Picked
+                    </span>
+                  )}
+                </div>
+                <p style={{ fontSize: 12, fontWeight: 500, color: c.text, lineHeight: 1.35, marginBottom: 4 }}>
+                  {clean(f.name || '')}
+                </p>
+                <p style={{ fontSize: 11, color: c.sub, lineHeight: 1.55, marginBottom: 6 }}>
+                  {f.summary}
+                </p>
+                <p style={{ fontSize: 11, color: c.muted, lineHeight: 1.55, paddingTop: 6, borderTop: `1px solid ${c.border}` }}>
+                  {clean(f.rationale || '')}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Stages 1, 2, 4: render as paragraphs */}
+      {!framings && !isEmpty && (
+        <div style={{ paddingLeft: 24 }}>
+          {paragraphs.length > 0 ? (
+            paragraphs.map((para, i) => (
+              <p
+                key={i}
+                style={{
+                  fontSize: 12,
+                  color: c.text,
+                  lineHeight: 1.65,
+                  marginBottom: i < paragraphs.length - 1 ? 10 : 0,
+                }}
+              >
+                {para}
+              </p>
+            ))
+          ) : (
+            <p style={{ fontSize: 12, color: c.text, lineHeight: 1.65, whiteSpace: "pre-wrap" }}>
+              {content}
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -5559,20 +5982,46 @@ export default function ScoutPage() {
     };
     
     const contribParsed = parseRange(kmValue);
-    // Hardcoded gap for FinServ: -$15M baseline to $0 target = $15M gap
-    // TODO: derive from goal data when we have real goals table
-    const gapMagnitude = 15;
-    const contribMid = contribParsed ? contribParsed.mid : 0;
-    const percentOfGap = Math.round((contribMid / gapMagnitude) * 100);
-    const remainingValue = Math.max(0, gapMagnitude - contribMid);
+        // Gap magnitude by goal — H1 Deliveries has no dollar gap (margin expansion play);
+    // FinServ has stated $15M breakeven gap; others fall back to display-only mode.
+    const primaryGoalId = a.primary_goal_id || 'finserv_ebitda';
     
+    const goalGapConfig: Record<string, { gap: number | null; baseline: string; target: string }> = {
+      'finserv_ebitda': { gap: 15, baseline: '-$15M', target: '$0' },
+      'deliveries_margin': { gap: null, baseline: '2.3% of GMV', target: 'FY26 expansion' },
+      'ondemand_gmv': { gap: null, baseline: '$6.5B/qtr', target: 'Sequential growth' },
+      'group_revenue': { gap: null, baseline: '$997M/qtr', target: '$4.10-4.15B FY26' },
+      'group_ebitda': { gap: null, baseline: '$168M/qtr', target: '$720-740M FY26' },
+      'ecosystem_mtu': { gap: null, baseline: '54M MTUs', target: 'Sustained growth' },
+      'ai_margin_lever': { gap: null, baseline: '-50% cost/interaction', target: 'Continued reduction' },
+    };
+    const goalCfg = goalGapConfig[primaryGoalId] || goalGapConfig['finserv_ebitda'];
+    
+    const contribMid = contribParsed ? contribParsed.mid : 0;
+    const hasNumericGap = goalCfg.gap !== null && goalCfg.gap > 0;
+    const percentOfGap = hasNumericGap ? Math.round((contribMid / goalCfg.gap!) * 100) : 0;
+    const remainingValue = hasNumericGap ? Math.max(0, goalCfg.gap! - contribMid) : 0;
+    
+        // Contribution note — dollar gap for FinServ, bps expansion for Deliveries margin, "Direct contribution" fallback
+    const contributionNote = (function() {
+      if (primaryGoalId === 'deliveries_margin') {
+        // Deliveries annualized GMV ≈ $2.6B/qtr × 4 = $10.4B/yr (from Q2 remarks, ~40% of On-Demand)
+        const bpsExpansion = Math.round((contribMid / 10400) * 10000);
+        return `~${bpsExpansion}bps of Deliveries margin`;
+      }
+      if (hasNumericGap && percentOfGap > 0) {
+        return `${Math.min(percentOfGap, 100)}% of the gap`;
+      }
+      return 'Direct contribution';
+    })();
     const uiPrimaryContribution = {
       value: kmValue || '~$XXX M',
-      percent_of_gap: percentOfGap || 35,
-      gap_value: `$${gapMagnitude}M`,
-      remaining_value: `~$${remainingValue.toFixed(0)}M`,
-      baseline_display: '-$15M',
-      target_display: '$0',
+      percent_of_gap: hasNumericGap ? Math.min(percentOfGap, 100) : 0,
+      gap_value: hasNumericGap ? `$${goalCfg.gap}M` : goalCfg.target,
+      remaining_value: hasNumericGap ? `~$${remainingValue.toFixed(0)}M` : '',
+      baseline_display: goalCfg.baseline,
+      target_display: goalCfg.target,
+      contribution_note: contributionNote,
     };
 
         // ---- Bets & Pilot: hardcoded per hypothesis until pipeline populates ----
@@ -5580,8 +6029,200 @@ export default function ScoutPage() {
     let uiBets: any[] = [];
     let uiPilot: any = null;
 
-    if (shortName === 'AMP + Atome Convergence') {
+        // ============================================================
+    // NEW: H1 / H2 / H3 branches — insert ABOVE the existing
+    // 'AMP + Atome Convergence' block. Old branches remain as
+    // fallback for any legacy scouted records still active.
+    // ============================================================
+
+    if (shortName === 'Uber-Foodpanda Two-Track: Lock or Buy') {
       uiBets = [
+        {
+          id: 1, rank: 1,
+          name: 'Lock top-decile Deliveries into GrabUnlimited + Priority before Uber-Foodpanda ships one app',
+          type: 'execution',
+          cost_tier: 'M cost', horizon: '9 months', feasibility_score: 8,
+          description: 'GrabUnlimited is at 35% of Deliveries GMV with 4x transaction frequency and subscribers +20% YoY. Push another 3-5ppt by locking currently-unattached top-decile users into subscription via GrabAds-funded GrabCoins acquisition loops. Adds ~USD 1M/qtr GU cohort margin uplift plus ~USD 12M/qtr Priority Deliveries premium contribution at MID case.',
+          rationale: 'DEL_MARGIN_FY26. Subscription users switch less than promo-hunters during subsidy wars. Locks the highest-value cohort in the 12-18 month Uber-Foodpanda integration window before Uber ships one integrated app with global ads and Cart Builder.',
+        },
+        {
+          id: 2, rank: 2,
+          name: 'Ready the Foodpanda SEA acquisition bid at Taiwan 0.33x EV/GMV precedent',
+          type: 'financial',
+          cost_tier: 'XL cost', horizon: '6-12 months', feasibility_score: 5,
+          description: 'Prepare M&A team and due diligence on Foodpanda SEA across 8 markets. At Taiwan\'s 0.33x EV/GMV precedent that Peter Oey already validated, the USD 2.75B midpoint Foodpanda SEA GMV implies a USD 908M acquisition price. Adds USD 77M/yr EBITDA from acquired GMV plus USD 384M/yr cross-sell revenue by 2028 if Scenario B activates.',
+          rationale: 'Two-track structure. Runs alongside Bet #1, not instead of it. Contingent on regulators forcing Uber to divest Foodpanda SEA to unwind the 2018 non-compete. Optionality Anthony\'s team should preserve without depending on it.',
+        },
+        {
+          id: 3, rank: 3,
+          name: 'Push Priority Deliveries GMV share from 19% to 24% by H2 27',
+          type: 'execution',
+          cost_tier: 'M cost', horizon: '9 months', feasibility_score: 8,
+          description: 'Priority Deliveries hit 19% of Deliveries GMV in Q2 (up from 15%). Every 1ppt lift adds ~15bps Deliveries margin at current contribution economics. Tighten priority-slot merchant match in high-density MY, PH, and ID corridors overlapping Foodpanda\'s 22-35% market share zones.',
+          rationale: 'Mix-shift lever within Grab\'s control, unlike GrabUnlimited penetration which is user-adoption bounded. Compounds the top-decile lock-in play because Priority users overlap heavily with the top-decile Deliveries cohort.',
+        },
+        {
+          id: 4, rank: 4,
+          name: 'Layer GrabMore bundling and GrabAds-funded GrabCoins into the lock-in mechanic',
+          type: 'execution',
+          cost_tier: 'S cost', horizon: '6 months', feasibility_score: 9,
+          description: 'GrabMore multi-merchant bundling raises basket size on locked-in cohort. GrabAds\' near-100% incremental margin surplus (revenue +50% YoY) funds GrabCoins subsidies for GU conversion. Adds ~SGD 0.3M/qtr GrabAds CPM lift on cohort ad inventory.',
+          rationale: 'Lowest-risk highest-feasibility bet. Both products already live; this is monetization tuning not build. The GrabAds surplus is the funding source that keeps the lock-in play cost-neutral to segment margin.',
+        },
+      ];
+      uiPilot = {
+        test_hypothesis: 'If we run a top-decile Deliveries lock-in play in the top 3 Klang Valley and Manila corridors for 12 weeks, converting currently-unattached top-decile users into GrabUnlimited plus Priority via GrabAds-funded GrabCoins offers, then 12-week conversion will hit 25%+ on the eligible cohort (versus 12-15% organic baseline), validating platform-wide rollout ahead of Uber-Foodpanda integration close.',
+        timeline_weeks: 12,
+        cost_usd: 550000,
+        decision_rule: 'Roll out platform-wide if 12-week conversion beats 25% with no Deliveries contribution margin compression beyond 20bps. Below 15% conversion, kill and rethink offer structure. Between 15% and 25%, extend by 8 weeks testing incentive stacking (GrabCoins + priority-slot access + GrabAds premium placement).',
+        success_metric: {
+          metric_name: 'Top-decile Deliveries user → GU + Priority conversion (12-week window, MY + PH pilot cohorts)',
+          baseline: '12-15% organic conversion on currently-unattached top-decile',
+          success_threshold: '>= 25% conversion (drives 3-5ppt GU GMV share expansion)',
+          ambiguous_zone: '15% - 25% (extend pilot, test incentive stacking)',
+          kill_threshold: '< 15% conversion or > 20bps Deliveries margin compression',
+        },
+        risks: [
+          {
+            risk: 'GrabAds surplus is smaller than modeled, GrabCoins subsidy erodes segment margin',
+            mitigation: 'Cap GrabCoins cost per acquired GU sub at USD 8 during pilot. Weekly reconciliation between GrabAds contribution and GrabCoins outflow. Kill switch if cost per acquisition exceeds USD 12 for 2 consecutive weeks.',
+          },
+          {
+            risk: 'Uber-Foodpanda deal closes faster than 18-month base case, shrinking the window',
+            mitigation: 'Compress pilot to 8 weeks with 2 markets. Prioritize MY and PH where Foodpanda holds 30%+ share. Scenario planning updated weekly with regulatory news tracker.',
+          },
+          {
+            risk: 'Foodpanda counter-subsidy war triggers early, top-decile users defect on price not features',
+            mitigation: 'Lock-in mechanism is subscription plus habit formation, not discounting. If Foodpanda subsidy war escalates, shift GrabAds funding from GrabCoins acquisition to GU retention rewards for existing subs.',
+          },
+        ],
+      };
+    } else if (shortName === 'Convert 54M MTUs into a Cross-Sell Lending Funnel') {
+      uiBets = [
+        {
+          id: 1, rank: 1,
+          name: 'Launch Cash Loan in TH and MY on schedule by mid-2026',
+          type: 'execution',
+          cost_tier: 'L cost', horizon: '6-9 months', feasibility_score: 7,
+          description: 'Cash Loan is live in PH with AI-underwritten pre-approvals off Mobility ride-history data. Launch TH and MY on schedule mid-2026. At 3% penetration of the ~30M Mobility MTU base, 6-month tenor, USD 200 avg loan, 7% net take: USD 25M/yr Cash Loan revenue. Every quarter of slippage cuts H2 26 FinServ contribution proportionally.',
+          rationale: 'FS_EBITDA_H2_26. Grab holds ride-history data no standalone lender has, letting pre-approval be one-tap. This is the single largest closable component of Peter Oey\'s stated breakeven commitment.',
+        },
+        {
+          id: 2, rank: 2,
+          name: 'Close Atome Phase 1 on schedule by Q3 2027 to unlock BNPL cross-sell',
+          type: 'financial',
+          cost_tier: 'XL cost', horizon: '12 months', feasibility_score: 6,
+          description: 'Atome USD 1.49B acquisition closes Q3 27. Standing up the joint integration team by Q4 26 is the highest-value action; slippage of one quarter compounds because BNPL launches sequentially across markets. At 5% Deliveries MTU penetration plus 30% cross-sell of existing 25M Atome users: USD 90M/yr BNPL revenue.',
+          rationale: 'Not H2 26 gap-closer (revenue kicks in FY28). Load-bearing for the USD 6B combined GLP 2028 target and the FY28 investor update arc.',
+        },
+        {
+          id: 3, rank: 3,
+          name: 'Activate MSME loans for driver-partners via GXBank + Jaguh Niaga and GXS + Validus',
+          type: 'financial',
+          cost_tier: 'M cost', horizon: '9 months', feasibility_score: 7,
+          description: 'GXS Bank has USD 1B+ SME loans disbursed via Validus. GXBank + Jaguh Niaga programme is live for MSMEs. Push MSME product to Grab\'s ~8M driver-partner base at 2% penetration, USD 800 avg loan, 2 cycles/yr, 6% take: USD 15M/yr MSME revenue. Turbo AI earnings data feeds underwriting.',
+          rationale: 'FS_QUARTERLY_DISBURSALS. Uses proprietary driver-earnings data (18-24 months per driver) that no standalone SME lender has. Compounds Bet #1 because driver-partners are pre-qualified via Mobility rails.',
+        },
+        {
+          id: 4, rank: 4,
+          name: 'Sweep Cash Loan and MSME repayments into Superbank and GXS deposit accounts',
+          type: 'execution',
+          cost_tier: 'S cost', horizon: '6 months', feasibility_score: 8,
+          description: 'Superbank has 7.4M customers and consolidates to Grab H2 26. At 25% conversion of repaying borrowers into Superbank deposits, USD 500 avg deposit per user, 3% NIM: USD 4M/yr NIM contribution. Small standalone but compounds every subsequent cross-sell.',
+          rationale: 'MTU_MOMENTUM plus deposit-funding cost advantage on the lending stack. Rappi Colombia validated the sweep-into-savings shape at 300K accounts with a fraction of Grab\'s user base.',
+        },
+      ];
+      uiPilot = {
+        test_hypothesis: 'If we run Cash Loan pre-approval on the top 200K Mobility MTUs in Bangkok and Klang Valley for 12 weeks, using ride-history-based AI underwriting and one-tap approval, then 12-week take rate will hit 4%+ on the eligible cohort (versus 1.5% standalone SEA short-tenor benchmark), validating the H2 26 breakeven path via Cash Loan revenue alone.',
+        timeline_weeks: 12,
+        cost_usd: 480000,
+        decision_rule: 'Roll out TH and MY nationally if 12-week take rate beats 4% with 30-day delinquency under 3%. Below 2% take rate, kill the ride-history model and pivot to standard SEA credit scoring. Between 2% and 4%, extend pilot by 6 weeks testing loan-size and tenor variations to find the accept-frequency sweet spot.',
+        success_metric: {
+          metric_name: 'Cash Loan take rate on top-200K Mobility MTU cohort (12-week window, BKK + Klang)',
+          baseline: '~1.5% standalone SEA short-tenor Cash Loan benchmark',
+          success_threshold: '>= 4% take rate (validates USD 25M/yr Cash Loan revenue path)',
+          ambiguous_zone: '2% - 4% (extend, tune loan size and tenor)',
+          kill_threshold: '< 2% take rate or > 3% 30-day delinquency',
+        },
+        risks: [
+          {
+            risk: 'BOT or BNM tightens digital lending regulation mid-pilot, caps take rates',
+            mitigation: 'Pre-brief regulators in both markets by Q4 26. Legal review of Grab\'s existing PH Cash Loan structure to identify replicable licensing pathway. Gate national rollout on written no-action letters.',
+          },
+          {
+            risk: 'AI credit model built on PH data underperforms on TH and MY borrower behavior',
+            mitigation: 'Cap first-loan ticket at USD 100 for pilot cohort. Run parallel human-underwritten control group on 10% of pilot. Retrain model on TH + MY behavioral data before national rollout.',
+          },
+          {
+            risk: 'Ride-history data proxy for creditworthiness is thinner than modeled (many drivers vs riders)',
+            mitigation: 'Segment pilot cohort into rider-heavy vs driver-heavy sub-cohorts. Measure take rate and delinquency separately. If rider cohort underperforms, restrict national launch to driver-partners in Phase 1.',
+          },
+        ],
+      };
+    } else if (shortName === 'GrabPay-Native Agentic Rails Before AMP Sets the Standard') {
+      uiBets = [
+        {
+          id: 1, rank: 1,
+          name: 'Ship GrabPay-native agentic payment APIs by Q3 2027',
+          type: 'execution',
+          cost_tier: 'L cost', horizon: '12 months', feasibility_score: 7,
+          description: 'Build GrabPay-native payment APIs that Grab Shopping Agent, Mai, Cash Loan, and Discover route through natively. In-app agentic transactions stay on GrabPay regardless of what protocol Ant sets externally. USD 20M one-time build cost. Pays back in ~1.5 years including credit model NPL preservation on FY30 USD 6-12B loan book.',
+          rationale: 'FS_GRABPAY_STANDALONE_TPV. Walled garden defense is the moat Grab controls. Grab Shopping Agent (live from GrabX April 2026) is the first internal customer; Mai and Cash Loan are next. Ships before AMP has SEA merchant lock-in.',
+        },
+        {
+          id: 2, rank: 2,
+          name: 'Negotiate GrabPay entry into Alipay+ as AMP Phase II wallet partner',
+          type: 'execution',
+          cost_tier: 'S cost', horizon: '9-12 months', feasibility_score: 4,
+          description: 'Parallel to Bet #1. Cross-app agentic commerce (external AI agent buying from a merchant that accepts multiple SEA wallets) is TPV Grab cannot force through walled garden alone. Negotiating Phase II entry preserves optionality on the ~30% of Grab-addressable agentic commerce that happens outside the app.',
+          rationale: 'Ant Phase I exclusion suggests low probability of favorable terms. Pursue with Anthony\'s and Peter\'s teams as insurance policy, not primary strategy. Zero build cost; pure negotiation.',
+        },
+        {
+          id: 3, rank: 3,
+          name: 'Instrument credit-model data-density protection on FY30 GLP',
+          type: 'financial',
+          cost_tier: 'M cost', horizon: '6-9 months', feasibility_score: 7,
+          description: 'Every high-value transaction that bypasses GrabPay reduces the transaction data feeding underwriting for Cash Loan, Atome, and Superbank. Instrument current data density per underwriting decision, model NPL sensitivity to density loss. USD 12M/yr NPL degradation avoided on USD 12B FY30 GLP at 10bps preserved.',
+          rationale: 'FS_CREDIT_MODEL_DATA_RICHNESS. This is the compounding cost of AMP inaction. Not one-time revenue loss; permanent structural credit model degradation until data density returns.',
+        },
+        {
+          id: 4, rank: 4,
+          name: 'Ship agentic payment SDK for Grab-adjacent merchants (Priority Deliveries brands, Atome partners)',
+          type: 'execution',
+          cost_tier: 'M cost', horizon: '9 months', feasibility_score: 6,
+          description: 'Give the 30K Atome brands and top 500 Priority Deliveries merchants a lightweight GrabPay agentic SDK for their own checkout flows. Even outside the Grab app, they route GrabPay first. Small addressable now, but positions Grab as the SEA agentic payment default before AMP consolidates merchants.',
+          rationale: 'Compounds Bet #1 by extending walled garden into partner merchant surfaces. Learning value on merchant side of the two-sided market that AMP is targeting.',
+        },
+      ];
+      uiPilot = {
+        test_hypothesis: 'If we ship GrabPay-native agentic payment APIs and route 100% of Grab Shopping Agent transactions through them for 12 weeks in the top 5 Jakarta and Ho Chi Minh City merchant categories, then in-app agentic TPV routed via GrabPay will hit 90%+ (versus ~60% baseline where users can pick), validating walled garden feasibility ahead of platform-wide rollout.',
+        timeline_weeks: 12,
+        cost_usd: 380000,
+        decision_rule: 'Roll out platform-wide to all in-app agentic surfaces (Mai, Discover, Cash Loan) if in-app agentic TPV routing hits 90%+ on GrabPay with no measurable degradation in Shopping Agent completion rate (baseline: 68% cart-to-checkout). Below 80% routing or completion rate drops more than 5ppt, kill the mandatory routing and revert to user-choice with GrabPay as default option.',
+        success_metric: {
+          metric_name: 'In-app agentic TPV routing via GrabPay (12-week window, Jakarta + HCMC merchant categories)',
+          baseline: '~60% GrabPay TPV routing when users can select payment method',
+          success_threshold: '>= 90% routing with completion rate held at 68%+',
+          ambiguous_zone: '80% - 90% routing (extend pilot, test UX friction reduction)',
+          kill_threshold: '< 80% routing or Shopping Agent completion rate falls > 5ppt',
+        },
+        risks: [
+          {
+            risk: 'Users prefer to keep payment choice, mandatory routing erodes trust in Shopping Agent',
+            mitigation: 'A/B test mandatory vs default-with-override in pilot cohort. Measure NPS on Shopping Agent weekly during pilot. If NPS drops more than 3 points, shift from mandatory to prominent-default with USD 2 GrabCoins nudge.',
+          },
+          {
+            risk: 'Ant amends AMP to be open-standard with GrabPay backend compatibility, walled garden becomes moot',
+            mitigation: 'Bet #2 (Alipay+ negotiation track) hedges this exact scenario. If AMP opens, in-app GrabPay-native APIs still preserve data density; walled garden becomes redundant defensively but continues as offensive routing preference.',
+          },
+          {
+            risk: 'GrabPay-native APIs create engineering complexity that slows Mai and Discover roadmaps',
+            mitigation: 'Isolate API layer to Payment Platform team. Provide stable versioned SDK to Mai and Discover teams so their velocity is unaffected. Weekly sync between Payment Platform and consuming teams during pilot.',
+          },
+        ],
+      };
+    } else if (shortName === 'AMP + Atome Convergence') {
+        uiBets = [
         {
           id: 1, rank: 1,
           name: 'Close Atome Phase 1 on schedule by Q3 27',
@@ -5724,28 +6365,32 @@ export default function ScoutPage() {
       name: a.short_name || MOCK_HYPOTHESIS.name,
       short_name: a.short_name || MOCK_HYPOTHESIS.short_name,
       sector: a.sector || MOCK_HYPOTHESIS.sector,
-      markets: typeof a.markets === 'string' 
-        ? a.markets.split(',').map((m: string) => m.trim()) 
-        : (a.markets || MOCK_HYPOTHESIS.markets),
-      urgency: 'high',
-      confidence: 'high',
-      pushback: a.pushback_paragraph || (MOCK_HYPOTHESIS as any).pushback || '',
-            primary_goal_id: (function() {
-        const map: Record<string, string> = {
+      primary_goal_id: (function() {
+        const raw = (a.primary_goal_id || '').trim();
+        // Direct match on lowercase goal IDs
+        if (['finserv_ebitda', 'ondemand_gmv', 'group_revenue', 'group_ebitda', 'ecosystem_mtu', 'deliveries_margin', 'ai_margin_lever'].includes(raw)) {
+          return raw;
+        }
+        // Legacy uppercase mapping fallback
+        const legacyMap: Record<string, string> = {
           'FS_EBITDA_H2_26': 'finserv_ebitda',
           'FS_GLP_EOY_26': 'finserv_ebitda',
           'OD_GMV_H2_26': 'ondemand_gmv',
           'GRP_REV_FY26': 'group_revenue',
           'GRP_EBITDA_FY26': 'group_ebitda',
-          'DEL_MARGIN_FY26': 'group_ebitda',
-          'MTU_MOMENTUM': 'group_revenue',
+          'DEL_MARGIN_FY26': 'deliveries_margin',
+          'MTU_MOMENTUM': 'ecosystem_mtu',
         };
-        return map[a.primary_goal_id || ''] || 'finserv_ebitda';
+        return legacyMap[raw] || MOCK_HYPOTHESIS.primary_goal_id;
       })(),
       primary_contribution: uiPrimaryContribution,
       arithmetic: uiArithmetic.length > 0 ? uiArithmetic : MOCK_HYPOTHESIS.arithmetic,
       arithmetic_result: {
-        label: '= Contribution to FinServ EBITDA gap',
+        label: `= Contribution to ${(function() {
+          const gid = (a.primary_goal_id || 'finserv_ebitda').toLowerCase();
+          const goalName = MOCK_GRAB_GOALS.find(g => g.id === gid)?.short_name || 'FinServ EBITDA';
+          return goalName;
+        })()} target`,
         value: kmValue || '~$XXX M',
       },
       secondary_goals: uiSecondaryGoals.length > 0 ? uiSecondaryGoals : MOCK_HYPOTHESIS.secondary_goals,
@@ -5816,6 +6461,7 @@ export default function ScoutPage() {
   hyp={drawerHyp}
   goals={scoutData.goals}
   drivers={scoutData.drivers}
+  signals={scoutData.signals || []}
   onClose={() => setDrawerHyp(null)}
   onAddToTop3={() => drawerHyp && addToTop3(drawerHyp.id)}
   onSetActiveFromDrawer={setActiveHypothesis}

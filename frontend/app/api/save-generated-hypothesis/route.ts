@@ -55,6 +55,10 @@ export async function POST(req: Request) {
     if (hypothesis.sector) fields.sector = hypothesis.sector;
     if (hypothesis.markets) fields.markets = hypothesis.markets;
     if (hypothesis.framing_rationale) fields.pushback_paragraph = hypothesis.framing_rationale;
+    // NEW — persist goal + drivers so drawer shows them
+    if (hypothesis.primary_goal_id) fields.primary_goal = hypothesis.primary_goal_id;
+    if (hypothesis.load_bearing_drivers) fields.load_bearing_drivers = hypothesis.load_bearing_drivers;
+    if (hypothesis.load_bearing_products) fields.load_bearing_products = hypothesis.load_bearing_products;
 
     if (action === "top3") {
       fields.is_in_top3 = true;
@@ -63,7 +67,6 @@ export async function POST(req: Request) {
       fields.is_saved = true;
     }
 
-    // Dedup by short_name — if existing row, PATCH instead of CREATE
     const existing = await findExisting(hypothesis.short_name);
     if (existing) {
       const merged = { ...fields };
